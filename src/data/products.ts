@@ -1,9 +1,10 @@
 import type { ProductDTO } from '../dtos/product.dto'
+import { imobiliaAdvertiser, auroraAdvertiser, marinaAdvertiser } from './advertisers'
 
 const livingRoom = { src: '/images/living-room.jpg', alt: 'Sala de estar iluminada com sofá e decoração em tons naturais' }
 const kitchen = { src: '/images/kitchen.jpg', alt: 'Cozinha integrada com bancada e armários planejados' }
 const bedroom = { src: '/images/bedroom.jpg', alt: 'Quarto confortável com cama de casal e iluminação natural' }
-const advertiser = { name: 'Equipe Imobilia', phone: null, email: null }
+const advertiser = imobiliaAdvertiser
 
 // Dados ilustrativos, sem relação com imóveis ou anunciantes reais.
 export const products: ProductDTO[] = [
@@ -21,7 +22,7 @@ export const products: ProductDTO[] = [
     area: 86, bedrooms: 2, bathrooms: 2, parkingSpaces: 1,
     description: 'Um apartamento que combina praticidade e aconchego. A sala integrada recebe luz natural e abre espaço para viver, trabalhar e receber com conforto. Localizado em um bairro com cafés, restaurantes e serviços por perto, é uma boa escolha para quem gosta de fazer parte da vida da cidade.',
     amenities: ['Varanda', 'Elevador', 'Portaria', 'Cozinha planejada', 'Área de serviço', 'Aceita pets'],
-    images: [livingRoom, kitchen, bedroom], advertiser,
+    images: [livingRoom, kitchen, bedroom], advertiser: auroraAdvertiser,
   },
   {
     id: 'casa-vista-serena', title: 'Casa Vista Serena', type: 'house', transaction: 'rent',
@@ -29,7 +30,7 @@ export const products: ProductDTO[] = [
     area: 240, bedrooms: 4, bathrooms: 3, parkingSpaces: 2,
     description: 'Espaço de sobra para criar boas memórias. Esta casa tem ambientes integrados, quartos confortáveis e uma área externa ideal para os finais de semana. O projeto valoriza a entrada de luz e a convivência, em uma região residencial cercada de natureza.',
     amenities: ['Jardim privativo', 'Churrasqueira', 'Quintal', 'Área de serviço', 'Suíte', 'Aceita pets'],
-    images: [{ src: '/images/house-modern.jpg', alt: 'Casa contemporânea com fachada branca e jardim verde' }, livingRoom, bedroom, kitchen], advertiser,
+    images: [{ src: '/images/house-modern.jpg', alt: 'Casa contemporânea com fachada branca e jardim verde' }, livingRoom, bedroom, kitchen], advertiser: auroraAdvertiser,
   },
   {
     id: 'apartamento-luz-do-dia', title: 'Apartamento Luz do Dia', type: 'apartment', transaction: 'rent',
@@ -45,7 +46,7 @@ export const products: ProductDTO[] = [
     area: 156, bedrooms: 3, bathrooms: 2, parkingSpaces: 2,
     description: 'Uma casa acolhedora, com jardim e ambientes que convidam a ficar. A planta oferece uma boa separação entre a área social e os quartos. O quintal traz espaço para plantas, brincadeiras e momentos ao ar livre.',
     amenities: ['Quintal', 'Jardim privativo', 'Churrasqueira', 'Área de serviço', 'Aceita pets'],
-    images: [{ src: '/images/house-cozy.jpg', alt: 'Casa acolhedora com varanda, gramado e árvores ao redor' }, livingRoom, kitchen, bedroom], advertiser,
+    images: [{ src: '/images/house-cozy.jpg', alt: 'Casa acolhedora com varanda, gramado e árvores ao redor' }, livingRoom, kitchen, bedroom], advertiser: marinaAdvertiser,
   },
   {
     id: 'apartamento-horizonte', title: 'Apartamento Horizonte', type: 'apartment', transaction: 'rent',
@@ -53,7 +54,7 @@ export const products: ProductDTO[] = [
     area: 112, bedrooms: 3, bathrooms: 2, parkingSpaces: 2,
     description: 'Vista aberta e ambientes bem resolvidos para viver com conforto. A sala espaçosa permite diferentes composições, e os quartos oferecem privacidade para toda a família. O condomínio fica próximo de serviços e áreas verdes.',
     amenities: ['Varanda', 'Elevador', 'Portaria', 'Suíte', 'Cozinha planejada', 'Área de serviço'],
-    images: [{ src: '/images/apartment-bright.jpg', alt: 'Sala de apartamento com amplas janelas e decoração contemporânea' }, kitchen, bedroom], advertiser,
+    images: [{ src: '/images/apartment-bright.jpg', alt: 'Sala de apartamento com amplas janelas e decoração contemporânea' }, kitchen, bedroom], advertiser: auroraAdvertiser,
   },
   {
     id: 'casa-jardins-do-sul', title: 'Casa Jardins do Sul', type: 'house', transaction: 'rent',
@@ -77,7 +78,7 @@ export const products: ProductDTO[] = [
     area: 210, bedrooms: 3, bathrooms: 3, parkingSpaces: 2,
     description: 'Uma casa espaçosa para escrever uma nova história. Com jardim, ambientes integrados e acabamentos em tons naturais, oferece conforto em uma região residencial tranquila. Os espaços externos convidam a aproveitar a vida ao ar livre.',
     amenities: ['Jardim privativo', 'Churrasqueira', 'Suíte', 'Quintal', 'Cozinha planejada', 'Aceita pets'],
-    images: [{ src: '/images/house-modern.jpg', alt: 'Casa ampla de arquitetura contemporânea cercada de verde' }, livingRoom, kitchen, bedroom], advertiser,
+    images: [{ src: '/images/house-modern.jpg', alt: 'Casa ampla de arquitetura contemporânea cercada de verde' }, livingRoom, kitchen, bedroom], advertiser: auroraAdvertiser,
   },
   {
     id: 'apartamento-vila-izar', title: 'Apartamento Vila Izar', type: 'apartment', transaction: 'sale',
@@ -93,7 +94,7 @@ export const products: ProductDTO[] = [
     area: 165, bedrooms: 3, bathrooms: 2, parkingSpaces: 2,
     description: 'Conforto e espaço em uma casa com personalidade. A área social acolhedora se conecta à cozinha, e o quintal oferece liberdade para criar o seu cantinho preferido. A região tem comércio e serviços para facilitar o dia a dia.',
     amenities: ['Quintal', 'Churrasqueira', 'Jardim privativo', 'Área de serviço', 'Aceita pets'],
-    images: [{ src: '/images/house-garden.jpg', alt: 'Casa com jardim frontal e fachada em tons neutros' }, kitchen, livingRoom, bedroom], advertiser,
+    images: [{ src: '/images/house-garden.jpg', alt: 'Casa com jardim frontal e fachada em tons neutros' }, kitchen, livingRoom, bedroom], advertiser: marinaAdvertiser,
   },
   {
     id: 'apartamento-alto-cabral', title: 'Apartamento Alto Cabral', type: 'apartment', transaction: 'sale',
@@ -109,7 +110,7 @@ export const products: ProductDTO[] = [
     area: 245, bedrooms: 4, bathrooms: 3, parkingSpaces: 2,
     description: 'Uma casa com ambientes amplos, luz natural e espaço para receber. A área social integrada se abre para o jardim, enquanto os quartos oferecem conforto e privacidade. A área externa completa o espaço para aproveitar a rotina e os finais de semana em família.',
     amenities: ['Jardim privativo', 'Churrasqueira', 'Suíte', 'Área de serviço', 'Cozinha planejada', 'Aceita pets'],
-    images: [{ src: '/images/house-pool.jpg', alt: 'Casa com jardim e área externa de convivência, imagem ilustrativa' }, livingRoom, kitchen, bedroom], advertiser,
+    images: [{ src: '/images/house-pool.jpg', alt: 'Casa com jardim e área externa de convivência, imagem ilustrativa' }, livingRoom, kitchen, bedroom], advertiser: auroraAdvertiser,
   },
   {
     id: 'lote-jardim-americas', title: 'Lote Jardim das Américas', type: 'land', transaction: 'rent',

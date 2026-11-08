@@ -5,6 +5,7 @@ import { productService } from '../../services/product.service'
 import { ProductCard } from '../../components/ProductCard/ProductCard'
 import { FeaturedProducts } from '../../components/FeaturedProducts/FeaturedProducts'
 import { Icon } from '../../components/Icon/Icon'
+import './Products.css'
 
 export function Products({ transaction }: { transaction: TransactionType }) {
   const initialFilters: ProductFiltersDTO = {
@@ -37,23 +38,10 @@ export function Products({ transaction }: { transaction: TransactionType }) {
 
   return (
     <main id="main-content" className="listing-page container" tabIndex={-1}>
-      <section className="listing-intro" aria-labelledby="listing-title">
-        <div>
-          <span className="eyebrow"><span /> NOVOS COMEÇOS MORAM AQUI</span>
-          <h1 id="listing-title">Um lugar para chamar de <span>seu.</span></h1>
-          <p>Encontre o imóvel que combina com a sua próxima história.</p>
-        </div>
-        <div className="intro-caption">
-          <Icon name="home" size={19} />
-          <span>Mais do que um endereço.<br /><strong>O seu próximo lar.</strong></span>
-        </div>
-      </section>
-
-      <FeaturedProducts products={featuredProducts} />
-
+      <h1 className="visually-hidden">Imóveis para {transaction === 'rent' ? 'alugar' : 'comprar'}</h1>
       <form className="search-filters" onSubmit={handleSearch} role="search" aria-label="Buscar imóveis">
         <label className="filter-field location-field">
-          <Icon name="pin" />
+          <Icon name="search" />
           <span className="field-content">
             <span className="field-label">Localização</span>
             <input
@@ -65,7 +53,7 @@ export function Products({ transaction }: { transaction: TransactionType }) {
             />
           </span>
         </label>
-        <label className="filter-field">
+        <label className="filter-field property-type-field">
           <Icon name="home" />
           <span className="field-content">
             <span className="field-label">Tipo de imóvel</span>
@@ -84,7 +72,7 @@ export function Products({ transaction }: { transaction: TransactionType }) {
             </select>
           </span><Icon name="chevron" size={16} />
         </label>
-        <label className="filter-field">
+        <label className="filter-field price-field">
           <span className="currency-icon" aria-hidden="true">R$</span>
           <span className="field-content">
             <span className="field-label">Valor máximo</span>
@@ -120,10 +108,13 @@ export function Products({ transaction }: { transaction: TransactionType }) {
             </select>
           </span><Icon name="chevron" size={16} />
         </label>
-        <button className="button button-primary search-button" type="submit">
-          <Icon name="search" size={19} /> Buscar imóveis
+        <button className="button button-primary search-button" type="submit" aria-label="Buscar imóveis">
+          <Icon name="search" size={19} />
+          <span>Buscar<span className="search-button-context"> imóveis</span></span>
         </button>
       </form>
+
+      <FeaturedProducts products={featuredProducts} />
 
       <section className="results-section" aria-labelledby="results-heading">
         <div className="results-toolbar">

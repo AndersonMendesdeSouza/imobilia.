@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { useState } from 'react'
 import type { ProductDTO } from '../../dtos/product.dto'
 import { Icon } from '../Icon/Icon'
@@ -43,10 +44,11 @@ export function ProductContact({ product }: { product: ProductDTO }) {
         {!phone && !email && <p>Este é um anúncio ilustrativo. O contato do anunciante ainda não foi informado.</p>}
       </div>
       <p className="contact-hint">Encontre os detalhes. Imagine as possibilidades.</p>
-      <div className="advertiser">
+      <Link className="advertiser" to={`/anunciantes/${product.advertiser.id}`} aria-label={`Ver perfil de ${name}`}>
         <span className="advertiser-avatar"><Icon name="home" size={22} /></span>
-        <div><strong>{name}</strong><span>Seu próximo lar começa aqui</span></div>
-      </div>
+        <div><strong>{name}</strong><span>Ver todos os anúncios</span></div>
+        <Icon name="arrow" size={17} />
+      </Link>
       <small className="demo-note">Anúncio de demonstração. Fotos e valores ilustrativos.</small>
     </aside>
   )

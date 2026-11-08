@@ -1,4 +1,4 @@
-type IconName = 'home' | 'search' | 'pin' | 'bed' | 'bath' | 'area' | 'arrow' | 'back' | 'chevron' | 'car' | 'check' | 'close' | 'images' | 'mail' | 'phone' | 'expand'
+export type IconName = 'home' | 'search' | 'pin' | 'bed' | 'bath' | 'area' | 'arrow' | 'back' | 'chevron' | 'car' | 'check' | 'close' | 'images' | 'mail' | 'phone' | 'expand' | 'building' | 'menu' | 'share' | 'user' | 'lock' | 'plus' | 'logout'
 
 const paths: Record<IconName, string> = {
   home: 'm3 10 9-7 9 7M5 9v12h14V9M9 21v-8h6v8',
@@ -17,6 +17,13 @@ const paths: Record<IconName, string> = {
   mail: 'M3 5h18v14H3V5Zm0 1 9 7 9-7',
   phone: 'M8 3H4c-1 0-1 3 0 6 2 6 5 9 11 11 3 1 6 1 6 0v-4l-5-2-2 2c-4-2-5-3-7-7l2-2-2-4Z',
   expand: 'M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5',
+  building: 'M3 21h18M5 21V3h10v18M15 9h4v12M8 7h1M11 7h1M8 11h1M11 11h1M8 15h1M11 15h1M9 21v-3h2v3',
+  menu: 'M4 6h16M4 12h16M4 18h16',
+  share: 'M12 15V3M7 8l5-5 5 5M5 13v8h14v-8',
+  user: 'M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M4 21v-2a8 8 0 0 1 16 0v2',
+  lock: 'M5 10h14v11H5V10ZM8 10V7a4 4 0 0 1 8 0v3M12 15v2',
+  plus: 'M12 4v16M4 12h16',
+  logout: 'M9 4H4v16h5M9 12h12M16 7l5 5-5 5',
 }
 
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {

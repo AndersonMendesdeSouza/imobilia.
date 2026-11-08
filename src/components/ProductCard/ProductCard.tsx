@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import type { ProductDTO } from '../../dtos/product.dto'
 import { Icon } from '../Icon/Icon'
 
@@ -9,9 +10,9 @@ export function ProductCard({ product }: { product: ProductDTO }) {
 
   return (
     <article className="product-card">
-      <a
+      <Link
         className="product-card-link"
-        href={`#/imoveis/${product.id}`}
+        to={`/imoveis/${product.id}`}
         aria-label={`Ver ${product.title}, ${price}${product.transaction === 'rent' ? ' por mês' : ''}`}
       >
         <div className="product-image">
@@ -40,7 +41,7 @@ export function ProductCard({ product }: { product: ProductDTO }) {
             )}
           </div>
         </div>
-      </a>
+      </Link>
     </article>
   )
 }

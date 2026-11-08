@@ -1,3 +1,4 @@
+import { Link, useParams } from 'react-router'
 import { useEffect } from 'react'
 import { productService } from '../../services/product.service'
 import { ProductGallery } from '../../components/ProductGallery/ProductGallery'
@@ -6,7 +7,8 @@ import { Icon } from '../../components/Icon/Icon'
 
 const propertyLabels = { house: 'Casa', apartment: 'Apartamento', land: 'Lote' }
 
-export function ProductDetails({ productId }: { productId: string }) {
+export function ProductDetails() {
+  const { productId = '' } = useParams()
   const product = productService.getById(productId)
 
   useEffect(() => {
@@ -19,20 +21,20 @@ export function ProductDetails({ productId }: { productId: string }) {
         <span className="empty-icon"><Icon name="home" size={30} /></span>
         <h1>Imóvel não encontrado</h1>
         <p>Este anúncio não está disponível. Conheça os outros imóveis da nossa seleção.</p>
-        <a className="button button-primary" href="#/imoveis">
+        <Link className="button button-primary" to="/imoveis">
           <Icon name="back" size={18} /> Voltar aos imóveis
-        </a>
+        </Link>
       </main>
     )
   }
 
-  const backLink = product.transaction === 'sale' ? '#/imoveis?finalidade=venda' : '#/imoveis'
+  const backLink = product.transaction === 'sale' ? '/imoveis?finalidade=venda' : '/imoveis'
   const isLand = product.type === 'land'
 
   return (
     <main id="main-content" className="detail-page container" tabIndex={-1}>
       <nav className="breadcrumbs" aria-label="Caminho da página">
-        <a href={backLink}><Icon name="back" size={16} /> Voltar aos imóveis</a>
+        <Link to={backLink}><Icon name="back" size={16} /> Voltar aos imóveis</Link>
         <span>/</span><span>{product.title}</span>
       </nav>
       <div className="detail-heading">
@@ -78,14 +80,16 @@ export function ProductDetails({ productId }: { productId: string }) {
             <h2>Espaço para a sua nova história.</h2>
             <p>{product.description}</p>
           </section>
-          <section className="information-section">
-            <h2>O que este imóvel oferece</h2>
-            <ul className="amenities-list">
-              {product.amenities.map((amenity) => (
-                <li key={amenity}><span><Icon name="check" size={15} /></span>{amenity}</li>
-              ))}
-            </ul>
-          </section>
+          {product.amenities.length > 0 && (
+            <section className="information-section">
+              <h2>O que este imóvel oferece</h2>
+              <ul className="amenities-list">
+                {product.amenities.map((amenity) => (
+                  <li key={amenity}><span><Icon name="check" size={15} /></span>{amenity}</li>
+                ))}
+              </ul>
+            </section>
+          )}
           <section className="location-section">
             <div className="location-mark"><Icon name="pin" size={25} /></div>
             <div>

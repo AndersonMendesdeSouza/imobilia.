@@ -1,0 +1,170 @@
+.more-page {
+  max-width: 800px;
+  padding-top: 35px;
+  padding-bottom: 35px;
+}
+
+.more-heading h1 {
+  margin-top: 14px;
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 550;
+  letter-spacing: -1px;
+  line-height: 1.3;
+}
+
+.more-heading > p {
+  max-width: 570px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+.more-access {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 26px;
+  padding: 22px;
+  border: 1px solid #e8dfca;
+  border-radius: 20px;
+  background: #faf7ef;
+}
+
+.more-access strong {
+  font-size: 15px;
+  font-weight: 550;
+  color: var(--primary);
+}
+
+.more-access p {
+  margin-top: 7px;
+  color: #87909c;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.more-page .more-login-button {
+  flex-shrink: 0;
+  min-height: 46px;
+  padding-inline: 25px;
+  border-radius: 20px;
+  background: var(--primary-dark);
+}
+
+.more-page .more-login-button:hover {
+  background: #243e5e;
+}
+
+.more-links {
+  display: grid;
+  gap: 13px;
+  margin-top: 30px;
+}
+
+.more-links > a {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: #fff;
+}
+
+.more-links > a:hover {
+  border-color: #caba96;
+  background: #fffefa;
+}
+
+.more-link-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 15px;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+.more-links strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 550;
+}
+
+.more-links small {
+  display: block;
+  margin-top: 6px;
+  color: #85909f;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.more-links > a > svg:last-child {
+  margin-left: auto;
+  color: #9b8b65;
+}
+
+.more-questions {
+  margin-top: 34px;
+}
+
+.more-questions h2 {
+  margin-bottom: 15px;
+  font-size: 20px;
+  font-weight: 550;
+  letter-spacing: -.5px;
+}
+
+.more-questions details {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.more-questions summary {
+  color: #465469;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.7;
+  cursor: pointer;
+}
+
+.more-questions summary::marker {
+  color: var(--accent-dark);
+}
+
+.more-questions details p {
+  margin-top: 12px;
+  color: #818c9a;
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+@media (max-width: 679px) {
+  .more-page {
+    padding-top: 26px;
+  }
+
+  .more-heading > p {
+    font-size: 13px;
+  }
+
+  .more-access {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 17px;
+    padding: 20px;
+  }
+
+  .more-links > a {
+    padding: 17px;
+    gap: 12px;
+  }
+
+  .more-links small {
+    font-size: 11px;
+  }
+}

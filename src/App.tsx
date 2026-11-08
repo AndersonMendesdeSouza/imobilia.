@@ -1,40 +1,60 @@
 import { useEffect, useState } from 'react'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 import { Header } from './components/Header/Header'
-import { Products } from './pages/Products/Products'
-import { ProductDetails } from './pages/ProductDetails/ProductDetails'
+import { TabBar } from './components/TabBar/TabBar'
+import { AppRoutes } from './routes/AppRoutes'
+import { authService } from './services/auth.service'
+import type { AdvertiserDTO } from './dtos/advertiser.dto'
 import './App.css'
 
 function App() {
-  const [hash, setHash] = useState(window.location.hash)
-  const [path, query = ''] = hash.slice(1).split('?')
-  const transaction = new URLSearchParams(query).get('finalidade') === 'venda' ? 'sale' : 'rent'
-  const productId = path?.startsWith('/imoveis/') ? path.slice('/imoveis/'.length) : null
+  const [currentUser, setCurrentUser] = useState(() => authService.getCurrentUser())
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const transaction = searchParams.get('finalidade') === 'venda' ? 'sale' : 'rent'
+  const loginState: unknown = location.state
+  let loginDestination = '/perfil'
+
+  if (loginState && typeof loginState === 'object' && 'from' in loginState && loginState.from === '/perfil/publicar') {
+    loginDestination = '/perfil/publicar'
+  }
 
   useEffect(() => {
-    function handleNavigation() {
-      setHash(window.location.hash)
-      window.scrollTo({ top: 0, behavior: 'instant' })
-    }
-    window.addEventListener('hashchange', handleNavigation)
-    return () => window.removeEventListener('hashchange', handleNavigation)
-  }, [])
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [location.pathname, location.search])
+
+  function handleLogin(user: AdvertiserDTO) {
+    setCurrentUser(user)
+    navigate(loginDestination, { replace: true })
+  }
+
+  function handleLogout() {
+    authService.logout()
+    setCurrentUser(null)
+    navigate('/mais/login', { replace: true })
+  }
 
   return (
-    <>
+    <div className="app-shell">
       <a className="skip-link" href="#main-content" onClick={(event) => {
         event.preventDefault()
         document.getElementById('main-content')?.focus()
       }}>Pular para o conteúdo</a>
-      <Header transaction={transaction} isDetails={productId !== null} />
-      {productId !== null
-        ? <ProductDetails key={productId} productId={productId} />
-        : <Products key={transaction} transaction={transaction} />}
+      <Header transaction={transaction} isListing={location.pathname === '/imoveis'} />
+      <AppRoutes
+        user={currentUser}
+        onLogin={handleLogin}
+        onLogout={handleLogout}
+        loginDestination={loginDestination}
+      />
       <footer className="site-footer container">
-        <a className="footer-brand" href="#/imoveis">imobilia<span>.</span></a>
+        <Link className="footer-brand" to="/imoveis">imobilia<span>.</span></Link>
         <p>Novos espaços. Novas histórias.</p>
         <small>Imóveis e valores ilustrativos.</small>
       </footer>
-    </>
+      <TabBar isLoggedIn={currentUser !== null} />
+    </div>
   )
 }
 

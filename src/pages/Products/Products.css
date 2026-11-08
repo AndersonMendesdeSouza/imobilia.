@@ -1,0 +1,196 @@
+.search-filters {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr .85fr auto;
+  grid-template-areas: 'location type price bedrooms submit';
+  align-items: stretch;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: #fff;
+}
+
+.filter-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 54px;
+  padding: 6px 14px;
+  border: 1px solid #e1e5ea;
+  border-radius: 20px;
+  background: #f9fafb;
+  transition: border-color .15s, background-color .15s, box-shadow .15s;
+}
+
+.filter-field:hover {
+  border-color: #c6ced8;
+  background: #fff;
+}
+
+.filter-field:focus-within {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px #bea05a1f;
+}
+
+.location-field {
+  grid-area: location;
+  border-color: #e5dcc7;
+  background: #fcfaf5;
+}
+
+.property-type-field {
+  grid-area: type;
+}
+
+.price-field {
+  grid-area: price;
+}
+
+.bedrooms-field {
+  grid-area: bedrooms;
+}
+
+.filter-field > svg, .currency-icon {
+  color: #96825a;
+}
+
+.currency-icon {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.field-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  min-width: 0;
+}
+
+.field-label {
+  color: #737d8c;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.field-content input, .field-content select {
+  width: 100%;
+  min-width: 0;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: #304056;
+  font-size: 14px;
+  line-height: normal;
+}
+
+.field-content input::placeholder {
+  color: #87909d;
+  opacity: 1;
+}
+
+.field-content select {
+  appearance: none;
+  padding-right: 20px;
+}
+
+.field-content input:focus-visible, .field-content select:focus-visible {
+  outline: none;
+}
+
+.filter-field > svg:last-child:not(:first-child) {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  width: 14px;
+  color: #8792a1;
+  pointer-events: none;
+}
+
+.filter-field:has(select:disabled) {
+  background: #f3f4f5;
+  border-color: #e6e8eb;
+}
+
+.filter-field:has(select:disabled) .field-content {
+  opacity: .55;
+}
+
+.search-filters .search-button {
+  grid-area: submit;
+  gap: 9px;
+  min-height: 54px;
+  padding: 9px 22px;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  background: var(--primary-dark);
+  font-size: 13px;
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+.search-filters .search-button:hover {
+  background: #243e5e;
+}
+
+.search-filters .search-button:active {
+  background: var(--primary);
+}
+
+@media (max-width: 1199px) {
+  .search-filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas: 'location location submit' 'type price bedrooms';
+  }
+}
+
+@media (max-width: 679px) {
+  .search-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: 'location location' 'type price' 'bedrooms submit';
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .filter-field {
+    min-height: 54px;
+    padding: 6px 14px;
+  }
+
+  .field-content input, .field-content select {
+    font-size: 16px;
+    height: 22px;
+  }
+
+  .filter-field > svg:first-child, .currency-icon {
+    display: none;
+  }
+
+  .location-field > svg:first-child {
+    display: block;
+  }
+
+  .search-filters .search-button {
+    min-height: 54px;
+    padding: 9px 12px;
+    font-size: 14px;
+  }
+
+  .search-button-context {
+    display: none;
+  }
+}
+
+@media (max-width: 359px) {
+  .search-filters {
+    grid-template-areas: 'location location' 'type type' 'price price' 'bedrooms submit';
+  }
+}

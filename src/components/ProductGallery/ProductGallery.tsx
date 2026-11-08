@@ -23,7 +23,7 @@ export function ProductGallery({ product }: { product: ProductDTO }) {
 
   return (
     <>
-      <section className={`property-gallery${product.images.length === 2 ? ' property-gallery-two' : ''}`} aria-label="Fotos do imóvel">
+      <section className={`property-gallery property-gallery-${product.images.length}`} aria-label="Fotos do imóvel">
         {product.images.slice(0, 3).map((photo, index) => (
           <button
             key={photo.src}
@@ -37,7 +37,7 @@ export function ProductGallery({ product }: { product: ProductDTO }) {
           </button>
         ))}
         <button className="gallery-all button" type="button" onClick={() => openGallery(0)}>
-          <Icon name="images" size={17} /> Ver {product.images.length} fotos
+          <Icon name="images" size={17} /> Ver {product.images.length} {product.images.length === 1 ? 'foto' : 'fotos'}
         </button>
       </section>
 
@@ -60,13 +60,17 @@ export function ProductGallery({ product }: { product: ProductDTO }) {
           </button>
         </div>
         <div className="gallery-stage">
-          <button className="icon-button gallery-previous" type="button" aria-label="Foto anterior" onClick={() => changeImage(-1)}>
-            <Icon name="back" size={23} />
-          </button>
+          {product.images.length > 1 && (
+            <button className="icon-button gallery-previous" type="button" aria-label="Foto anterior" onClick={() => changeImage(-1)}>
+              <Icon name="back" size={23} />
+            </button>
+          )}
           <img src={product.images[activeImage].src} alt={product.images[activeImage].alt} />
-          <button className="icon-button gallery-next" type="button" aria-label="Próxima foto" onClick={() => changeImage(1)}>
-            <Icon name="arrow" size={23} />
-          </button>
+          {product.images.length > 1 && (
+            <button className="icon-button gallery-next" type="button" aria-label="Próxima foto" onClick={() => changeImage(1)}>
+              <Icon name="arrow" size={23} />
+            </button>
+          )}
         </div>
         <p>{product.images[activeImage].alt}</p>
         <div className="gallery-thumbnails">

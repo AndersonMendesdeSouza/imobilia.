@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import type { ProductDTO } from '../../dtos/product.dto'
@@ -71,24 +72,19 @@ export function FeaturedProducts({ products }: { products: ProductDTO[] }) {
             />
             <span className="featured-transaction">{product.transaction === 'rent' ? 'Para alugar' : 'À venda'}</span>
             <div className="featured-content">
-              <span className="featured-eyebrow"><span /> IMÓVEIS EM DESTAQUE</span>
+              <span className="featured-label">Vitrine de imóveis</span>
               <h2>{product.title}</h2>
               <p className="featured-location">
                 <Icon name="pin" size={16} /> {product.neighborhood} · {product.city}, {product.state}
               </p>
-              <div className="featured-features">
-                <span><Icon name="area" size={17} />{product.area} m²</span>
-                <span><Icon name="bed" size={18} />{product.bedrooms} quartos</span>
-                <span><Icon name="car" size={18} />{product.parkingSpaces} vagas</span>
-              </div>
               <div className="featured-action">
                 <p className="featured-price">
                   {product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
                   {product.transaction === 'rent' && <small>/mês</small>}
                 </p>
-                <a className="button featured-link" href={`#/imoveis/${product.id}`} tabIndex={index === activeIndex ? 0 : -1}>
-                  Conhecer imóvel <Icon name="arrow" size={17} />
-                </a>
+                <Link className="button featured-link" to={`/imoveis/${product.id}`} tabIndex={index === activeIndex ? 0 : -1}>
+                  Ver detalhes <Icon name="arrow" size={17} />
+                </Link>
               </div>
             </div>
           </article>
