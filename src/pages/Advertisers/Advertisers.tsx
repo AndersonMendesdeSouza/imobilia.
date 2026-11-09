@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { advertiserService } from '../../services/advertiser.service'
 import { productService } from '../../services/product.service'
 import { Icon } from '../../components/Icon/Icon'
+import { Avatar } from '../../components/Avatar/Avatar'
 import './Advertisers.css'
 
 export function Advertisers() {
@@ -20,18 +21,18 @@ export function Advertisers() {
         <p>Encontre profissionais, conheça seus perfis e explore os imóveis de cada anunciante.</p>
       </div>
       <div className="advertisers-grid">
-        {advertisers.map((advertiser) => {
-          const count = productService.listByAdvertiser(advertiser.id).length
+        {advertisers.map((usuario) => {
+          const count = productService.listByAdvertiser(usuario.id).length
 
           return (
-            <Link className="advertiser-list-card" to={`/anunciantes/${advertiser.id}`} key={advertiser.id}>
+            <Link className="advertiser-list-card" to={`/anunciantes/${usuario.id}`} key={usuario.id}>
               <div className="advertiser-card-heading">
-                <span className="public-profile-avatar"><Icon name="building" size={28} /></span>
-                <span className="advertiser-kind">{advertiser.kind === 'agency' ? 'Imobiliária' : 'Corretagem independente'}</span>
+                <Avatar className="public-profile-avatar" foto={usuario.foto} icon="building" />
+                <span className="advertiser-kind">Anunciante</span>
               </div>
-              <h2>{advertiser.name}</h2>
-              <p className="public-profile-location"><Icon name="pin" size={15} />{advertiser.city}, {advertiser.state}</p>
-              <p className="advertiser-card-description">{advertiser.description}</p>
+              <h2>{usuario.nome}</h2>
+              <p className="public-profile-location"><Icon name="pin" size={15} />{usuario.cidade}, {usuario.estado}</p>
+              <p className="advertiser-card-description">{usuario.descricao}</p>
               <div className="advertiser-card-footer">
                 <span><strong>{count}</strong> {count === 1 ? 'imóvel publicado' : 'imóveis publicados'}</span>
                 <span className="advertiser-card-action">Ver perfil <Icon name="arrow" size={17} /></span>

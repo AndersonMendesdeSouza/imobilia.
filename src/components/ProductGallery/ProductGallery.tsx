@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
-import type { ProductDTO } from '../../dtos/product.dto'
+import type { ImovelResponseDTO } from '../../dtos/response/imovel-response.dto'
 import { Icon } from '../Icon/Icon'
 
-export function ProductGallery({ product }: { product: ProductDTO }) {
+export function ProductGallery({ product }: { product: ImovelResponseDTO }) {
   const [activeImage, setActiveImage] = useState(0)
   const dialogRef = useRef<HTMLDialogElement>(null)
 
@@ -13,7 +13,7 @@ export function ProductGallery({ product }: { product: ProductDTO }) {
   }
 
   function changeImage(direction: number) {
-    setActiveImage((current) => (current + direction + product.images.length) % product.images.length)
+    setActiveImage((current) => (current + direction + product.fotos.length) % product.fotos.length)
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLDialogElement>) {
@@ -23,32 +23,32 @@ export function ProductGallery({ product }: { product: ProductDTO }) {
 
   return (
     <>
-      <section className={`property-gallery property-gallery-${product.images.length}`} aria-label="Fotos do imóvel">
-        {product.images.slice(0, 3).map((photo, index) => (
+      <section className={`property-gallery property-gallery-${product.fotos.length}`} aria-label="Fotos do imóvel">
+        {product.fotos.slice(0, 3).map((foto, index) => (
           <button
-            key={photo.src}
+            key={foto.url}
             type="button"
             className={`gallery-tile gallery-tile-${index}`}
             onClick={() => openGallery(index)}
-            aria-label={`Ampliar foto: ${photo.alt}`}
+            aria-label={`Ampliar foto: ${foto.textoAlternativo}`}
           >
-            <img src={photo.src} alt={photo.alt} width="1000" height="700" />
+            <img src={foto.url} alt={foto.textoAlternativo} width="1000" height="700" />
             <span className="gallery-expand"><Icon name="expand" size={20} /></span>
           </button>
         ))}
         <button className="gallery-all button" type="button" onClick={() => openGallery(0)}>
-          <Icon name="images" size={17} /> Ver {product.images.length} {product.images.length === 1 ? 'foto' : 'fotos'}
+          <Icon name="images" size={17} /> Ver {product.fotos.length} {product.fotos.length === 1 ? 'foto' : 'fotos'}
         </button>
       </section>
 
       <dialog
         className="gallery-dialog"
         ref={dialogRef}
-        aria-label={`Galeria de ${product.title}`}
+        aria-label={`Galeria de ${product.titulo}`}
         onKeyDown={handleKeyDown}
       >
         <div className="gallery-dialog-header">
-          <span>{activeImage + 1} / {product.images.length}</span>
+          <span>{activeImage + 1} / {product.fotos.length}</span>
           <button
             className="icon-button"
             type="button"
@@ -60,30 +60,30 @@ export function ProductGallery({ product }: { product: ProductDTO }) {
           </button>
         </div>
         <div className="gallery-stage">
-          {product.images.length > 1 && (
+          {product.fotos.length > 1 && (
             <button className="icon-button gallery-previous" type="button" aria-label="Foto anterior" onClick={() => changeImage(-1)}>
               <Icon name="back" size={23} />
             </button>
           )}
-          <img src={product.images[activeImage].src} alt={product.images[activeImage].alt} />
-          {product.images.length > 1 && (
+          <img src={product.fotos[activeImage].url} alt={product.fotos[activeImage].textoAlternativo} />
+          {product.fotos.length > 1 && (
             <button className="icon-button gallery-next" type="button" aria-label="Próxima foto" onClick={() => changeImage(1)}>
               <Icon name="arrow" size={23} />
             </button>
           )}
         </div>
-        <p>{product.images[activeImage].alt}</p>
+        <p>{product.fotos[activeImage].textoAlternativo}</p>
         <div className="gallery-thumbnails">
-          {product.images.map((photo, index) => (
+          {product.fotos.map((foto, index) => (
             <button
               type="button"
-              key={photo.src}
+              key={foto.url}
               className={index === activeImage ? 'selected' : ''}
               onClick={() => setActiveImage(index)}
               aria-label={`Ver foto ${index + 1}`}
               aria-pressed={index === activeImage}
             >
-              <img src={photo.src} alt="" />
+              <img src={foto.url} alt="" />
             </button>
           ))}
         </div>

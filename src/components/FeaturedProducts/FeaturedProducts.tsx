@@ -1,11 +1,11 @@
 import { Link } from 'react-router'
 import { useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
-import type { ProductDTO } from '../../dtos/product.dto'
+import type { ImovelResponseDTO } from '../../dtos/response/imovel-response.dto'
 import { Icon } from '../Icon/Icon'
 import './FeaturedProducts.css'
 
-export function FeaturedProducts({ products }: { products: ProductDTO[] }) {
+export function FeaturedProducts({ products }: { products: ImovelResponseDTO[] }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const trackRef = useRef<HTMLDivElement>(null)
 
@@ -52,7 +52,7 @@ export function FeaturedProducts({ products }: { products: ProductDTO[] }) {
         onScroll={handleScroll}
         onKeyDown={handleKeyDown}
         tabIndex={0}
-        aria-label="Casas em destaque. Use as setas para navegar."
+        aria-label="Imóveis em destaque. Use as setas para navegar."
       >
         {products.map((product, index) => (
           <article
@@ -60,27 +60,27 @@ export function FeaturedProducts({ products }: { products: ProductDTO[] }) {
             key={product.id}
             role="group"
             aria-roledescription="slide"
-            aria-label={`${index + 1} de ${products.length}: ${product.title}`}
+            aria-label={`${index + 1} de ${products.length}: ${product.titulo}`}
           >
             <img
               className="featured-image"
-              src={product.images[0].src}
-              alt={product.images[0].alt}
+              src={product.fotos[0].url}
+              alt={product.fotos[0].textoAlternativo}
               width="1200"
               height="800"
               loading={index === 0 ? 'eager' : 'lazy'}
             />
-            <span className="featured-transaction">{product.transaction === 'rent' ? 'Para alugar' : 'À venda'}</span>
+            <span className="featured-transaction">{product.finalidade === 'aluguel' ? 'Para alugar' : 'À venda'}</span>
             <div className="featured-content">
               <span className="featured-label">Vitrine de imóveis</span>
-              <h2>{product.title}</h2>
+              <h2>{product.titulo}</h2>
               <p className="featured-location">
-                <Icon name="pin" size={16} /> {product.neighborhood} · {product.city}, {product.state}
+                <Icon name="pin" size={16} /> {product.bairro} · {product.cidade}, {product.estado}
               </p>
               <div className="featured-action">
                 <p className="featured-price">
-                  {product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
-                  {product.transaction === 'rent' && <small>/mês</small>}
+                  {product.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
+                  {product.finalidade === 'aluguel' && <small>/mês</small>}
                 </p>
                 <Link className="button featured-link" to={`/imoveis/${product.id}`} tabIndex={index === activeIndex ? 0 : -1}>
                   Ver detalhes <Icon name="arrow" size={17} />
@@ -98,7 +98,7 @@ export function FeaturedProducts({ products }: { products: ProductDTO[] }) {
                 key={product.id}
                 className={`featured-dot${index === activeIndex ? ' active' : ''}`}
                 type="button"
-                aria-label={`Mostrar ${product.title}`}
+                aria-label={`Mostrar ${product.titulo}`}
                 aria-pressed={index === activeIndex}
                 aria-controls="featured-track"
                 onClick={() => goToSlide(index)}
@@ -109,10 +109,10 @@ export function FeaturedProducts({ products }: { products: ProductDTO[] }) {
             <span className="featured-counter" aria-live="polite" aria-atomic="true">{activeIndex + 1} de {products.length}</span>
           </div>
           <div className="featured-arrows">
-            <button type="button" aria-label="Casa anterior" aria-controls="featured-track" onClick={() => goToSlide(activeIndex - 1)}>
+            <button type="button" aria-label="Imóvel anterior" aria-controls="featured-track" onClick={() => goToSlide(activeIndex - 1)}>
               <Icon name="back" size={19} />
             </button>
-            <button type="button" aria-label="Próxima casa" aria-controls="featured-track" onClick={() => goToSlide(activeIndex + 1)}>
+            <button type="button" aria-label="Próximo imóvel" aria-controls="featured-track" onClick={() => goToSlide(activeIndex + 1)}>
               <Icon name="arrow" size={19} />
             </button>
           </div>

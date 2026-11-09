@@ -4,16 +4,16 @@ import { Header } from './components/Header/Header'
 import { TabBar } from './components/TabBar/TabBar'
 import { AppRoutes } from './routes/AppRoutes'
 import { authService } from './services/auth.service'
-import type { AdvertiserDTO } from './dtos/advertiser.dto'
+import type { UserResponseDTO } from './dtos/response/user-response.dto'
 import './App.css'
 
 function App() {
   const [currentUser, setCurrentUser] = useState(() => authService.getCurrentUser())
-  const location = useLocation()
+  const localizacao = useLocation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const transaction = searchParams.get('finalidade') === 'venda' ? 'sale' : 'rent'
-  const loginState: unknown = location.state
+  const finalidade = searchParams.get('finalidade') === 'venda' ? 'venda' : 'aluguel'
+  const loginState: unknown = localizacao.state
   let loginDestination = '/perfil'
 
   if (loginState && typeof loginState === 'object' && 'from' in loginState && loginState.from === '/perfil/publicar') {
@@ -22,9 +22,9 @@ function App() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' })
-  }, [location.pathname, location.search])
+  }, [localizacao.pathname, localizacao.search])
 
-  function handleLogin(user: AdvertiserDTO) {
+  function handleLogin(user: UserResponseDTO) {
     setCurrentUser(user)
     navigate(loginDestination, { replace: true })
   }
@@ -41,7 +41,7 @@ function App() {
         event.preventDefault()
         document.getElementById('main-content')?.focus()
       }}>Pular para o conteúdo</a>
-      <Header transaction={transaction} isListing={location.pathname === '/imoveis'} />
+      <Header finalidade={finalidade} isListing={localizacao.pathname === '/imoveis'} />
       <AppRoutes
         user={currentUser}
         onLogin={handleLogin}
@@ -53,7 +53,7 @@ function App() {
         <p>Novos espaços. Novas histórias.</p>
         <small>Imóveis e valores ilustrativos.</small>
       </footer>
-      <TabBar isLoggedIn={currentUser !== null} />
+      <TabBar user={currentUser} />
     </div>
   )
 }

@@ -1,29 +1,29 @@
 import { Link } from 'react-router'
-import type { ProductDTO } from '../../dtos/product.dto'
+import type { ImovelResponseDTO } from '../../dtos/response/imovel-response.dto'
 import { Icon } from '../Icon/Icon'
 
-const propertyLabels = { house: 'Casa', apartment: 'Apartamento', land: 'Lote' }
+const propertyLabels = { casa: 'Casa', apartamento: 'Apartamento', lote: 'Lote' }
 
-export function ProductCard({ product }: { product: ProductDTO }) {
-  const isLand = product.type === 'land'
-  const price = product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
+export function ProductCard({ product }: { product: ImovelResponseDTO }) {
+  const isLand = product.tipo === 'lote'
+  const valor = product.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
 
   return (
     <article className="product-card">
       <Link
         className="product-card-link"
         to={`/imoveis/${product.id}`}
-        aria-label={`Ver ${product.title}, ${price}${product.transaction === 'rent' ? ' por mês' : ''}`}
+        aria-label={`Ver ${product.titulo}, ${valor}${product.finalidade === 'aluguel' ? ' por mês' : ''}`}
       >
         <div className="product-image">
-          <img src={product.images[0].src} alt={product.images[0].alt} loading="lazy" width="640" height="440" />
-          <span className="property-tag">{propertyLabels[product.type]}</span>
-          <span className="price-tag">{price}{product.transaction === 'rent' && <small>/mês</small>}</span>
+          <img src={product.fotos[0].url} alt={product.fotos[0].textoAlternativo} loading="lazy" width="640" height="440" />
+          <span className="property-tag">{propertyLabels[product.tipo]}</span>
+          <span className="price-tag">{valor}{product.finalidade === 'aluguel' && <small>/mês</small>}</span>
         </div>
         <div className="product-content">
-          <h2>{product.title}</h2>
-          <p className="product-neighborhood">{product.neighborhood}</p>
-          <p className="product-location"><Icon name="pin" size={14} />{product.city}, {product.state}</p>
+          <h2>{product.titulo}</h2>
+          <p className="product-neighborhood">{product.bairro}</p>
+          <p className="product-location"><Icon name="pin" size={14} />{product.cidade}, {product.estado}</p>
           <div className={`product-features${isLand ? ' land-features' : ''}`}>
             <span>
               <Icon name="area" size={17} /><strong>{product.area} m²</strong>
@@ -32,10 +32,10 @@ export function ProductCard({ product }: { product: ProductDTO }) {
             {!isLand && (
               <>
                 <span>
-                  <Icon name="bed" size={18} /><strong>{product.bedrooms}</strong><small>Quartos</small>
+                  <Icon name="bed" size={18} /><strong>{product.quartos}</strong><small>Quartos</small>
                 </span>
                 <span>
-                  <Icon name="bath" size={18} /><strong>{product.bathrooms}</strong><small>Banheiros</small>
+                  <Icon name="bath" size={18} /><strong>{product.banheiros}</strong><small>Banheiros</small>
                 </span>
               </>
             )}

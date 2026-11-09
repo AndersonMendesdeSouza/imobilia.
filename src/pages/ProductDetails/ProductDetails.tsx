@@ -5,14 +5,14 @@ import { ProductGallery } from '../../components/ProductGallery/ProductGallery'
 import { ProductContact } from '../../components/ProductContact/ProductContact'
 import { Icon } from '../../components/Icon/Icon'
 
-const propertyLabels = { house: 'Casa', apartment: 'Apartamento', land: 'Lote' }
+const propertyLabels = { casa: 'Casa', apartamento: 'Apartamento', lote: 'Lote' }
 
 export function ProductDetails() {
   const { productId = '' } = useParams()
   const product = productService.getById(productId)
 
   useEffect(() => {
-    document.title = product ? `${product.title} | Imobilia` : 'Imóvel não encontrado | Imobilia'
+    document.title = product ? `${product.titulo} | Imobilia` : 'Imóvel não encontrado | Imobilia'
   }, [product])
 
   if (!product) {
@@ -28,22 +28,22 @@ export function ProductDetails() {
     )
   }
 
-  const backLink = product.transaction === 'sale' ? '/imoveis?finalidade=venda' : '/imoveis'
-  const isLand = product.type === 'land'
+  const backLink = product.finalidade === 'venda' ? '/imoveis?finalidade=venda' : '/imoveis'
+  const isLand = product.tipo === 'lote'
 
   return (
     <main id="main-content" className="detail-page container" tabIndex={-1}>
       <nav className="breadcrumbs" aria-label="Caminho da página">
         <Link to={backLink}><Icon name="back" size={16} /> Voltar aos imóveis</Link>
-        <span>/</span><span>{product.title}</span>
+        <span>/</span><span>{product.titulo}</span>
       </nav>
       <div className="detail-heading">
         <div>
           <span className="eyebrow">
-            {propertyLabels[product.type].toUpperCase()} PARA {product.transaction === 'rent' ? 'ALUGAR' : 'COMPRAR'}
+            {propertyLabels[product.tipo].toUpperCase()} PARA {product.finalidade === 'aluguel' ? 'ALUGAR' : 'COMPRAR'}
           </span>
-          <h1>{product.title}</h1>
-          <p><Icon name="pin" size={17} />{product.neighborhood}, {product.city} — {product.state}</p>
+          <h1>{product.titulo}</h1>
+          <p><Icon name="pin" size={17} />{product.bairro}, {product.cidade} — {product.estado}</p>
         </div>
         <span className="detail-reference">Anúncio ilustrativo</span>
       </div>
@@ -61,15 +61,15 @@ export function ProductDetails() {
               <>
                 <div>
                   <Icon name="bed" size={26} />
-                  <strong>{product.bedrooms} quartos</strong><span>Dormitórios</span>
+                  <strong>{product.quartos} quartos</strong><span>Dormitórios</span>
                 </div>
                 <div>
                   <Icon name="bath" size={26} />
-                  <strong>{product.bathrooms} banheiros</strong><span>Banheiros</span>
+                  <strong>{product.banheiros} banheiros</strong><span>Banheiros</span>
                 </div>
                 <div>
                   <Icon name="car" size={26} />
-                  <strong>{product.parkingSpaces} {product.parkingSpaces === 1 ? 'vaga' : 'vagas'}</strong>
+                  <strong>{product.vagasGaragem} {product.vagasGaragem === 1 ? 'vaga' : 'vagas'}</strong>
                   <span>Garagem</span>
                 </div>
               </>
@@ -78,13 +78,13 @@ export function ProductDetails() {
           <section className="information-section">
             <span className="eyebrow">CONHEÇA SEU PRÓXIMO LAR</span>
             <h2>Espaço para a sua nova história.</h2>
-            <p>{product.description}</p>
+            <p>{product.descricao}</p>
           </section>
-          {product.amenities.length > 0 && (
+          {product.comodidades.length > 0 && (
             <section className="information-section">
               <h2>O que este imóvel oferece</h2>
               <ul className="amenities-list">
-                {product.amenities.map((amenity) => (
+                {product.comodidades.map((amenity) => (
                   <li key={amenity}><span><Icon name="check" size={15} /></span>{amenity}</li>
                 ))}
               </ul>
@@ -94,7 +94,7 @@ export function ProductDetails() {
             <div className="location-mark"><Icon name="pin" size={25} /></div>
             <div>
               <h2>Uma boa história começa pelo bairro.</h2>
-              <p>{product.neighborhood} · {product.city}, {product.state}</p>
+              <p>{product.bairro} · {product.cidade}, {product.estado}</p>
               <small>Localização aproximada. Endereço completo sob consulta.</small>
             </div>
           </section>

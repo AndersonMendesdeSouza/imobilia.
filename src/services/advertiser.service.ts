@@ -6,6 +6,6 @@ export const advertiserService = {
   },
 
   getById(id: string) {
-    return advertisers.find((advertiser) => advertiser.id === id)
+    return advertisers.find((usuario) => usuario.id === id)
   },
 }

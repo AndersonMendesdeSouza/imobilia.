@@ -1,14 +1,15 @@
 import { Link } from 'react-router'
 import { useEffect, useState } from 'react'
-import type { AdvertiserDTO } from '../../dtos/advertiser.dto'
+import type { UserResponseDTO } from '../../dtos/response/user-response.dto'
 import { productService } from '../../services/product.service'
 import { ProductCard } from '../../components/ProductCard/ProductCard'
 import { Icon } from '../../components/Icon/Icon'
+import { Avatar } from '../../components/Avatar/Avatar'
 import '../Advertisers/Advertisers.css'
 import '../Account.css'
 
 interface ProfileProps {
-  user: AdvertiserDTO
+  user: UserResponseDTO
   onLogout: () => void
   publishedProductId: string | null
 }
@@ -34,11 +35,11 @@ export function Profile({ user, onLogout, publishedProductId }: ProfileProps) {
     <main id="main-content" className="directory-page container" tabIndex={-1}>
       <section className="owner-profile-header" aria-labelledby="my-profile-title">
         <div className="public-profile-identity">
-          <span className="public-profile-avatar profile-avatar-large"><Icon name="user" size={30} /></span>
+          <Avatar className="public-profile-avatar profile-avatar-large" foto={user.foto} />
           <div>
             <span className="eyebrow">MINHA CONTA</span>
-            <h1 id="my-profile-title">{user.name}</h1>
-            <p className="public-profile-location"><Icon name="pin" size={15} />{user.city}, {user.state}</p>
+            <h1 id="my-profile-title">{user.nome}</h1>
+            <p className="public-profile-location"><Icon name="pin" size={15} />{user.cidade}, {user.estado}</p>
           </div>
         </div>
         <div className="owner-profile-actions">

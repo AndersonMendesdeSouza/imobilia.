@@ -4,22 +4,23 @@ import { advertiserService } from '../../services/advertiser.service'
 import { productService } from '../../services/product.service'
 import { ProductCard } from '../../components/ProductCard/ProductCard'
 import { Icon } from '../../components/Icon/Icon'
+import { Avatar } from '../../components/Avatar/Avatar'
 import '../Advertisers/Advertisers.css'
 
 export function AdvertiserProfile() {
-  const { advertiserId = '' } = useParams()
-  const advertiser = advertiserService.getById(advertiserId)
+  const { usuarioId = '' } = useParams()
+  const usuario = advertiserService.getById(usuarioId)
   const [shareUrl, setShareUrl] = useState('')
   const [shareStatus, setShareStatus] = useState('')
 
   useEffect(() => {
-    document.title = advertiser ? `${advertiser.name} | Imobilia` : 'Anunciante não encontrado | Imobilia'
-  }, [advertiser])
+    document.title = usuario ? `${usuario.nome} | Imobilia` : 'Anunciante não encontrado | Imobilia'
+  }, [usuario])
 
   async function copyProfileLink() {
-    if (!advertiser) return
+    if (!usuario) return
 
-    const url = `${window.location.origin}${window.location.pathname}#/anunciantes/${advertiser.id}`
+    const url = `${window.location.origin}${window.location.pathname}#/anunciantes/${usuario.id}`
     setShareUrl(url)
 
     try {
@@ -30,7 +31,7 @@ export function AdvertiserProfile() {
     }
   }
 
-  if (!advertiser) {
+  if (!usuario) {
     return (
       <main id="main-content" className="container not-found" tabIndex={-1}>
         <span className="empty-icon"><Icon name="building" size={30} /></span>
@@ -41,7 +42,7 @@ export function AdvertiserProfile() {
     )
   }
 
-  const products = productService.listByAdvertiser(advertiser.id)
+  const products = productService.listByAdvertiser(usuario.id)
 
   return (
     <main id="main-content" className="directory-page container" tabIndex={-1}>
@@ -50,17 +51,17 @@ export function AdvertiserProfile() {
       </nav>
       <section className="public-profile-header" aria-labelledby="profile-title">
         <div className="public-profile-identity">
-          <span className="public-profile-avatar profile-avatar-large"><Icon name="building" size={32} /></span>
+          <Avatar className="public-profile-avatar profile-avatar-large" foto={usuario.foto} icon="building" />
           <div>
-            <span className="eyebrow">{advertiser.kind === 'agency' ? 'IMOBILIÁRIA' : 'CORRETAGEM INDEPENDENTE'}</span>
-            <h1 id="profile-title">{advertiser.name}</h1>
-            <p className="public-profile-location"><Icon name="pin" size={15} />{advertiser.city}, {advertiser.state}</p>
+            <span className="eyebrow">ANUNCIANTE</span>
+            <h1 id="profile-title">{usuario.nome}</h1>
+            <p className="public-profile-location"><Icon name="pin" size={15} />{usuario.cidade}, {usuario.estado}</p>
           </div>
         </div>
         <button className="button profile-share-button" type="button" onClick={copyProfileLink}>
           <Icon name="share" size={18} /> Compartilhar perfil
         </button>
-        <p className="public-profile-description">{advertiser.description}</p>
+        <p className="public-profile-description">{usuario.descricao}</p>
       </section>
       {shareUrl && (
         <div className="profile-share-result">

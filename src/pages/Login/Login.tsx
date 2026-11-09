@@ -1,15 +1,16 @@
 import { Link } from 'react-router'
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import type { AdvertiserDTO } from '../../dtos/advertiser.dto'
+import type { UserResponseDTO } from '../../dtos/response/user-response.dto'
 import { demoAccounts } from '../../data/demo-accounts'
 import { authService } from '../../services/auth.service'
 import { Icon } from '../../components/Icon/Icon'
+import { Avatar } from '../../components/Avatar/Avatar'
 import '../Account.css'
 
-export function Login({ onLogin }: { onLogin: (user: AdvertiserDTO) => void }) {
+export function Login({ onLogin }: { onLogin: (user: UserResponseDTO) => void }) {
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [senha, setSenha] = useState('')
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -21,8 +22,8 @@ export function Login({ onLogin }: { onLogin: (user: AdvertiserDTO) => void }) {
     setError('')
 
     try {
-      const user = authService.login({ email, password })
-      onLogin(user)
+      const { usuario } = authService.login({ email, senha })
+      onLogin(usuario)
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Não foi possível entrar. Tente novamente.')
     }
@@ -43,7 +44,7 @@ export function Login({ onLogin }: { onLogin: (user: AdvertiserDTO) => void }) {
           </label>
           <label className="account-field">
             <span>Senha</span>
-            <input type="password" name="password" required autoComplete="current-password" placeholder="Digite sua senha" value={password} onChange={(event) => { setPassword(event.target.value); setError('') }} />
+            <input type="password" name="senha" required autoComplete="current-password" placeholder="Digite sua senha" value={senha} onChange={(event) => { setSenha(event.target.value); setError('') }} />
           </label>
           {error && <p className="account-alert" role="alert">{error}</p>}
           <button className="button button-primary account-submit" type="submit">Entrar <Icon name="arrow" size={19} /></button>
@@ -58,9 +59,9 @@ export function Login({ onLogin }: { onLogin: (user: AdvertiserDTO) => void }) {
           <p>Escolha uma conta de teste para preencher o formulário.</p>
           <div className="demo-account-options">
             {demoAccounts.map((account) => (
-              <button key={account.advertiserId} type="button" onClick={() => { setEmail(account.email); setPassword(account.password); setError('') }}>
-                <Icon name="building" size={18} />
-                <span><strong>{account.name}</strong><small>{account.email}</small></span>
+              <button key={account.usuarioId} type="button" onClick={() => { setEmail(account.email); setSenha(account.senha); setError('') }}>
+                <Avatar className="demo-account-avatar" foto={account.foto} icon="building" />
+                <span><strong>{account.nome}</strong><small>{account.email}</small></span>
                 <Icon name="arrow" size={16} />
               </button>
             ))}

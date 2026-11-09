@@ -1,34 +1,32 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import type { ProductFiltersDTO, PropertyType, TransactionType } from '../../dtos/product.dto'
+import type { FiltrosImoveis } from '../../services/product.service'
+import type { TipoImovel, FinalidadeImovel } from '../../dtos/enums'
 import { productService } from '../../services/product.service'
 import { ProductCard } from '../../components/ProductCard/ProductCard'
 import { FeaturedProducts } from '../../components/FeaturedProducts/FeaturedProducts'
 import { Icon } from '../../components/Icon/Icon'
 import './Products.css'
 
-export function Products({ transaction }: { transaction: TransactionType }) {
-  const initialFilters: ProductFiltersDTO = {
-    transaction,
-    location: '',
-    type: '',
-    maxPrice: null,
-    bedrooms: null,
+export function Products({ finalidade }: { finalidade: FinalidadeImovel }) {
+  const initialFilters: FiltrosImoveis = {
+    finalidade,
+    localizacao: '',
   }
   const [filters, setFilters] = useState(initialFilters)
   const [appliedFilters, setAppliedFilters] = useState(initialFilters)
   const products = productService.list(appliedFilters)
-  const featuredProducts = productService.list({ ...initialFilters, type: 'house' }).slice(0, 3)
-  const hasFilters = Boolean(appliedFilters.location || appliedFilters.type || appliedFilters.maxPrice || appliedFilters.bedrooms)
-  const priceOptions = transaction === 'rent' ? [2000, 3000, 4000, 5000, 6000] : [500000, 750000, 1000000]
+  const featuredProducts = productService.list(initialFilters).filter((product) => product.destaque)
+  const hasFilters = Boolean(appliedFilters.localizacao || appliedFilters.tipo || appliedFilters.valorMaximo || appliedFilters.quartos)
+  const priceOptions = finalidade === 'aluguel' ? [2000, 3000, 4000, 5000, 6000] : [500000, 750000, 1000000]
 
   useEffect(() => {
-    document.title = `${transaction === 'rent' ? 'Imóveis para alugar' : 'Imóveis para comprar'} | Imobilia`
-  }, [transaction])
+    document.title = `${finalidade === 'aluguel' ? 'Imóveis para alugar' : 'Imóveis para comprar'} | Imobilia`
+  }, [finalidade])
 
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setAppliedFilters({ ...filters, location: filters.location.trim() })
+    setAppliedFilters({ ...filters, localizacao: filters.localizacao?.trim() })
   }
 
   function clearFilters() {
@@ -38,7 +36,7 @@ export function Products({ transaction }: { transaction: TransactionType }) {
 
   return (
     <main id="main-content" className="listing-page container" tabIndex={-1}>
-      <h1 className="visually-hidden">Imóveis para {transaction === 'rent' ? 'alugar' : 'comprar'}</h1>
+      <h1 className="visually-hidden">Imóveis para {finalidade === 'aluguel' ? 'alugar' : 'comprar'}</h1>
       <form className="search-filters" onSubmit={handleSearch} role="search" aria-label="Buscar imóveis">
         <label className="filter-field location-field">
           <Icon name="search" />
@@ -46,10 +44,10 @@ export function Products({ transaction }: { transaction: TransactionType }) {
             <span className="field-label">Localização</span>
             <input
               type="search"
-              name="location"
+              name="localizacao"
               placeholder="Cidade ou bairro"
-              value={filters.location}
-              onChange={(event) => setFilters({ ...filters, location: event.target.value })}
+              value={filters.localizacao ?? ''}
+              onChange={(event) => setFilters({ ...filters, localizacao: event.target.value })}
             />
           </span>
         </label>
@@ -58,17 +56,17 @@ export function Products({ transaction }: { transaction: TransactionType }) {
           <span className="field-content">
             <span className="field-label">Tipo de imóvel</span>
             <select
-              name="type"
-              value={filters.type}
+              name="tipo"
+              value={filters.tipo ?? ''}
               onChange={(event) => {
-                const type = event.target.value as PropertyType | ''
-                setFilters({ ...filters, type, bedrooms: type === 'land' ? null : filters.bedrooms })
+                const tipo = event.target.value as TipoImovel | ''
+                setFilters({ ...filters, tipo: tipo || undefined, quartos: tipo === 'lote' ? undefined : filters.quartos })
               }}
             >
               <option value="">Todos os tipos</option>
-              <option value="house">Casa</option>
-              <option value="apartment">Apartamento</option>
-              <option value="land">Lote</option>
+              <option value="casa">Casa</option>
+              <option value="apartamento">Apartamento</option>
+              <option value="lote">Lote</option>
             </select>
           </span><Icon name="chevron" size={16} />
         </label>
@@ -77,14 +75,14 @@ export function Products({ transaction }: { transaction: TransactionType }) {
           <span className="field-content">
             <span className="field-label">Valor máximo</span>
             <select
-              name="maxPrice"
-              value={filters.maxPrice ?? ''}
-              onChange={(event) => setFilters({ ...filters, maxPrice: event.target.value ? Number(event.target.value) : null })}
+              name="valorMaximo"
+              value={filters.valorMaximo ?? ''}
+              onChange={(event) => setFilters({ ...filters, valorMaximo: event.target.value ? Number(event.target.value) : undefined })}
             >
               <option value="">Sem limite</option>
-              {priceOptions.map((price) => (
-                <option key={price} value={price}>
-                  Até {price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
+              {priceOptions.map((valor) => (
+                <option key={valor} value={valor}>
+                  Até {valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
                 </option>
               ))}
             </select>
@@ -95,12 +93,12 @@ export function Products({ transaction }: { transaction: TransactionType }) {
           <span className="field-content">
             <span className="field-label">Quartos</span>
             <select
-              name="bedrooms"
-              disabled={filters.type === 'land'}
-              value={filters.bedrooms ?? ''}
-              onChange={(event) => setFilters({ ...filters, bedrooms: event.target.value ? Number(event.target.value) : null })}
+              name="quartos"
+              disabled={filters.tipo === 'lote'}
+              value={filters.quartos ?? ''}
+              onChange={(event) => setFilters({ ...filters, quartos: event.target.value ? Number(event.target.value) : undefined })}
             >
-              <option value="">{filters.type === 'land' ? 'Não se aplica' : 'Todos'}</option>
+              <option value="">{filters.tipo === 'lote' ? 'Não se aplica' : 'Todos'}</option>
               <option value="1">1 ou mais</option>
               <option value="2">2 ou mais</option>
               <option value="3">3 ou mais</option>
@@ -114,12 +112,15 @@ export function Products({ transaction }: { transaction: TransactionType }) {
         </button>
       </form>
 
-      <FeaturedProducts products={featuredProducts} />
+      <FeaturedProducts
+        key={featuredProducts.map((product) => product.id).join(',')}
+        products={featuredProducts}
+      />
 
       <section className="results-section" aria-labelledby="results-heading">
         <div className="results-toolbar">
           <div className="results-summary">
-            <h2 id="results-heading">Imóveis para {transaction === 'rent' ? 'alugar' : 'comprar'}</h2>
+            <h2 id="results-heading">Imóveis para {finalidade === 'aluguel' ? 'alugar' : 'comprar'}</h2>
             <span className="results-count" role="status" aria-atomic="true">
               {products.length} {products.length === 1 ? 'imóvel encontrado' : 'imóveis encontrados'}
             </span>

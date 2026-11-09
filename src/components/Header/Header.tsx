@@ -1,10 +1,10 @@
 import { Link } from 'react-router'
-import type { TransactionType } from '../../dtos/product.dto'
+import type { FinalidadeImovel } from '../../dtos/enums'
 import { Icon } from '../Icon/Icon'
 
-export function Header({ transaction, isListing }: { transaction: TransactionType; isListing: boolean }) {
-  const isBuying = isListing && transaction === 'sale'
-  const isRenting = isListing && transaction === 'rent'
+export function Header({ finalidade, isListing }: { finalidade: FinalidadeImovel; isListing: boolean }) {
+  const isBuying = isListing && finalidade === 'venda'
+  const isRenting = isListing && finalidade === 'aluguel'
 
   return (
     <header className="site-header">

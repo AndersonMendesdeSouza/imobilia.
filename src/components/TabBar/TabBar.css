@@ -49,3 +49,17 @@
 .tab-bar-item.active svg {
   color: var(--accent-dark);
 }
+
+.tab-bar-avatar {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #e4dcc9;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+.tab-bar-avatar > svg {
+  width: 22px;
+  height: 22px;
+}

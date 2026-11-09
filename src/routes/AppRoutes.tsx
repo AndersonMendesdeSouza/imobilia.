@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes, useLocation, useSearchParams } from 'react-router'
-import type { AdvertiserDTO } from '../dtos/advertiser.dto'
+import type { UserResponseDTO } from '../dtos/response/user-response.dto'
 import { Products } from '../pages/Products/Products'
 import { ProductDetails } from '../pages/ProductDetails/ProductDetails'
 import { Advertisers } from '../pages/Advertisers/Advertisers'
@@ -11,27 +11,27 @@ import { PublishProduct } from '../pages/PublishProduct/PublishProduct'
 import { RequireAuth } from './RequireAuth'
 
 interface AppRoutesProps {
-  user: AdvertiserDTO | null
-  onLogin: (user: AdvertiserDTO) => void
+  user: UserResponseDTO | null
+  onLogin: (user: UserResponseDTO) => void
   onLogout: () => void
   loginDestination: string
 }
 
 export function AppRoutes({ user, onLogin, onLogout, loginDestination }: AppRoutesProps) {
-  const location = useLocation()
+  const localizacao = useLocation()
   const [searchParams] = useSearchParams()
-  const transaction = searchParams.get('finalidade') === 'venda' ? 'sale' : 'rent'
+  const finalidade = searchParams.get('finalidade') === 'venda' ? 'venda' : 'aluguel'
 
   return (
     <Routes>
       <Route index element={<Navigate to="/imoveis" replace />} />
       <Route path="imoveis">
-        <Route index element={<Products key={transaction} transaction={transaction} />} />
-        <Route path=":productId" element={<ProductDetails key={location.pathname} />} />
+        <Route index element={<Products key={finalidade} finalidade={finalidade} />} />
+        <Route path=":productId" element={<ProductDetails key={localizacao.pathname} />} />
       </Route>
       <Route path="anunciantes">
         <Route index element={<Advertisers />} />
-        <Route path=":advertiserId" element={<AdvertiserProfile key={location.pathname} />} />
+        <Route path=":usuarioId" element={<AdvertiserProfile key={localizacao.pathname} />} />
       </Route>
       <Route path="mais">
         <Route index element={user ? <Navigate to="/perfil/sobre" replace /> : <More isLoggedIn={false} />} />
@@ -53,7 +53,7 @@ export function AppRoutes({ user, onLogin, onLogout, loginDestination }: AppRout
           <Route path="sobre" element={<More isLoggedIn />} />
         </Route>
       </Route>
-      <Route path="login" element={<Navigate to="/mais/login" replace state={location.state} />} />
+      <Route path="login" element={<Navigate to="/mais/login" replace state={localizacao.state} />} />
       <Route path="publicar" element={<Navigate to="/perfil/publicar" replace />} />
       <Route path="*" element={<Navigate to="/imoveis" replace />} />
     </Routes>
