@@ -16,7 +16,7 @@ export function ProductCard({ product }: { product: ImovelResponseDTO }) {
         aria-label={`Ver ${product.titulo}, ${valor}${product.finalidade === 'aluguel' ? ' por mês' : ''}`}
       >
         <div className="product-image">
-          <img src={product.fotos[0].url} alt={product.fotos[0].textoAlternativo} loading="lazy" width="640" height="440" />
+          <img src={(product.imagens.find((imagem) => imagem.isPrimary) ?? product.imagens[0])?.url} alt={product.titulo} loading="lazy" width="640" height="440" />
           <span className="property-tag">{propertyLabels[product.tipo]}</span>
           <span className="price-tag">{valor}{product.finalidade === 'aluguel' && <small>/mês</small>}</span>
         </div>

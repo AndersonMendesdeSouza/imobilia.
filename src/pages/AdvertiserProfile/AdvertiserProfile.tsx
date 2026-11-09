@@ -1,7 +1,8 @@
 import { Link, useParams } from 'react-router'
 import { useEffect, useState } from 'react'
-import { advertiserService } from '../../services/advertiser.service'
-import { productService } from '../../services/product.service'
+import { UserService } from '../../services/user.service'
+import type { UserResponseDTO } from '../../dtos/response/user-response.dto'
+import { isAxiosError } from 'axios'
 import { ProductCard } from '../../components/ProductCard/ProductCard'
 import { Icon } from '../../components/Icon/Icon'
 import { Avatar } from '../../components/Avatar/Avatar'
@@ -9,13 +10,52 @@ import '../Advertisers/Advertisers.css'
 
 export function AdvertiserProfile() {
   const { usuarioId = '' } = useParams()
-  const usuario = advertiserService.getById(usuarioId)
+  const [usuario, setUsuario] = useState<UserResponseDTO | null>(null)
+  const [carregando, setCarregando] = useState(true)
+  const [erro, setErro] = useState('')
+  const [tentativa, setTentativa] = useState(0)
   const [shareUrl, setShareUrl] = useState('')
   const [shareStatus, setShareStatus] = useState('')
 
   useEffect(() => {
-    document.title = usuario ? `${usuario.nome} | Imobilia` : 'Anunciante não encontrado | Imobilia'
-  }, [usuario])
+    let ativo = true
+
+    UserService.findOne(usuarioId)
+      .then((usuario) => {
+        if (ativo) setUsuario(usuario)
+      })
+      .catch((error: unknown) => {
+        if (!ativo) return
+        if (isAxiosError(error) && error.response?.status === 404) {
+          setUsuario(null)
+        } else {
+          setErro('Não foi possível carregar o perfil. Tente novamente.')
+        }
+      })
+      .finally(() => {
+        if (ativo) setCarregando(false)
+      })
+
+    return () => {
+      ativo = false
+    }
+  }, [usuarioId, tentativa])
+
+  useEffect(() => {
+    if (carregando) {
+      document.title = 'Perfil do anunciante | Imobilia'
+    } else if (usuario) {
+      document.title = `${usuario.nome} | Imobilia`
+    } else {
+      document.title = 'Perfil indisponível | Imobilia'
+    }
+  }, [usuario, carregando])
+
+  function recarregar() {
+    setCarregando(true)
+    setErro('')
+    setTentativa((atual) => atual + 1)
+  }
 
   async function copyProfileLink() {
     if (!usuario) return
@@ -31,6 +71,20 @@ export function AdvertiserProfile() {
     }
   }
 
+  if (carregando) {
+    return <main id="main-content" className="container not-found" tabIndex={-1} aria-busy="true"><p role="status">Carregando perfil…</p></main>
+  }
+
+  if (erro) {
+    return (
+      <main id="main-content" className="container not-found" tabIndex={-1}>
+        <h1>Não foi possível carregar o perfil.</h1>
+        <p role="alert">{erro}</p>
+        <button type="button" className="button button-primary" onClick={recarregar}>Tentar novamente</button>
+      </main>
+    )
+  }
+
   if (!usuario) {
     return (
       <main id="main-content" className="container not-found" tabIndex={-1}>
@@ -42,7 +96,7 @@ export function AdvertiserProfile() {
     )
   }
 
-  const products = productService.listByAdvertiser(usuario.id)
+  const products = usuario.imoveis.map((imovel) => ({ ...imovel, usuario }))
 
   return (
     <main id="main-content" className="directory-page container" tabIndex={-1}>
@@ -51,7 +105,7 @@ export function AdvertiserProfile() {
       </nav>
       <section className="public-profile-header" aria-labelledby="profile-title">
         <div className="public-profile-identity">
-          <Avatar className="public-profile-avatar profile-avatar-large" foto={usuario.foto} icon="building" />
+          <Avatar className="public-profile-avatar profile-avatar-large" foto={usuario.img?.url ?? null} icon="building" />
           <div>
             <span className="eyebrow">ANUNCIANTE</span>
             <h1 id="profile-title">{usuario.nome}</h1>
@@ -90,7 +144,6 @@ export function AdvertiserProfile() {
           </div>
         )}
       </section>
-      <p className="public-demo-note">Perfil e anúncios de demonstração.</p>
     </main>
   )
 }

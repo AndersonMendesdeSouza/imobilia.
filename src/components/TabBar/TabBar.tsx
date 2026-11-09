@@ -25,8 +25,8 @@ export function TabBar({ user }: { user: UserResponseDTO | null }) {
     <nav className="tab-bar" aria-label="Navegação principal">
       {items.map((item) => (
         <NavLink key={item.to} className="tab-bar-item" to={item.to}>
-          {item.to === '/perfil' && user?.foto ? (
-            <Avatar className="tab-bar-avatar" foto={user.foto} />
+          {item.to === '/perfil' && user?.img?.url ? (
+            <Avatar className="tab-bar-avatar" foto={user.img.url} />
           ) : (
             <Icon name={item.icon} size={22} />
           )}

@@ -1,5 +1,4 @@
 import type { FinalidadeImovel, TipoImovel } from '../enums'
-import type { ImgRequestDTO } from './img-request.dto'
 
 export interface ImovelRequestDTO {
   titulo: string
@@ -16,6 +15,5 @@ export interface ImovelRequestDTO {
   quartos: number
   banheiros: number
   vagasGaragem: number
-  imgs: ImgRequestDTO[]
   comodidades: string[]
 }

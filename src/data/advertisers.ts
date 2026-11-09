@@ -1,10 +1,25 @@
+import type { ImgResponseDTO } from '../dtos/response/img-response.dto'
 import type { UsuarioPublico } from '../dtos/response/user-response.dto'
 import { demoAccounts } from './demo-accounts'
+
+function getDemoImage(usuarioId: string): ImgResponseDTO | null {
+  const foto = demoAccounts.find((account) => account.usuarioId === usuarioId)?.foto
+  if (!foto) return null
+
+  return {
+    id: `${usuarioId}-perfil`,
+    url: foto,
+    publicUrlId: `demo/perfis/${usuarioId}`,
+    isPrimary: true,
+    usuarioId,
+    imovelId: null,
+  }
+}
 
 // Perfis ilustrativos para apresentar a navegação pública da plataforma.
 export const imobiliaAdvertiser: UsuarioPublico = {
   id: 'equipe-imobilia',
-  foto: demoAccounts.find((account) => account.usuarioId === 'equipe-imobilia')?.foto ?? null,
+  img: getDemoImage('equipe-imobilia'),
   nome: 'Equipe Imobilia',
   cidade: 'Curitiba',
   estado: 'PR',
@@ -14,7 +29,7 @@ export const imobiliaAdvertiser: UsuarioPublico = {
 
 export const auroraAdvertiser: UsuarioPublico = {
   id: 'aurora-imoveis',
-  foto: demoAccounts.find((account) => account.usuarioId === 'aurora-imoveis')?.foto ?? null,
+  img: getDemoImage('aurora-imoveis'),
   nome: 'Aurora Imóveis',
   cidade: 'Curitiba',
   estado: 'PR',
@@ -24,7 +39,7 @@ export const auroraAdvertiser: UsuarioPublico = {
 
 export const marinaAdvertiser: UsuarioPublico = {
   id: 'marina-costa',
-  foto: demoAccounts.find((account) => account.usuarioId === 'marina-costa')?.foto ?? null,
+  img: getDemoImage('marina-costa'),
   nome: 'Marina Costa',
   cidade: 'São José dos Pinhais',
   estado: 'PR',

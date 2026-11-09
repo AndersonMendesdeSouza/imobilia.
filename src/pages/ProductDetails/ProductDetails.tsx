@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router'
 import { useEffect } from 'react'
-import { productService } from '../../services/product.service'
+import { useImoveis } from '../../hooks/useImoveis'
 import { ProductGallery } from '../../components/ProductGallery/ProductGallery'
 import { ProductContact } from '../../components/ProductContact/ProductContact'
 import { Icon } from '../../components/Icon/Icon'
@@ -9,11 +9,32 @@ const propertyLabels = { casa: 'Casa', apartamento: 'Apartamento', lote: 'Lote' 
 
 export function ProductDetails() {
   const { productId = '' } = useParams()
-  const product = productService.getById(productId)
+  const { imoveis, carregando, erro, recarregar } = useImoveis()
+  const product = imoveis.find((imovel) => imovel.id === productId)
 
   useEffect(() => {
-    document.title = product ? `${product.titulo} | Imobilia` : 'Imóvel não encontrado | Imobilia'
-  }, [product])
+    if (carregando) {
+      document.title = 'Carregando imóvel | Imobilia'
+    } else if (product) {
+      document.title = `${product.titulo} | Imobilia`
+    } else {
+      document.title = 'Imóvel não encontrado | Imobilia'
+    }
+  }, [product, carregando])
+
+  if (carregando) {
+    return <main id="main-content" className="container not-found" tabIndex={-1} aria-busy="true"><p role="status">Carregando imóvel…</p></main>
+  }
+
+  if (erro) {
+    return (
+      <main id="main-content" className="container not-found" tabIndex={-1}>
+        <h1>Não foi possível carregar o imóvel.</h1>
+        <p role="alert">{erro}</p>
+        <button type="button" className="button button-primary" onClick={recarregar}>Tentar novamente</button>
+      </main>
+    )
+  }
 
   if (!product) {
     return (
@@ -28,7 +49,7 @@ export function ProductDetails() {
     )
   }
 
-  const backLink = product.finalidade === 'venda' ? '/imoveis?finalidade=venda' : '/imoveis'
+  const backLink = `/imoveis?finalidade=${product.finalidade}`
   const isLand = product.tipo === 'lote'
 
   return (
@@ -45,7 +66,7 @@ export function ProductDetails() {
           <h1>{product.titulo}</h1>
           <p><Icon name="pin" size={17} />{product.bairro}, {product.cidade} — {product.estado}</p>
         </div>
-        <span className="detail-reference">Anúncio ilustrativo</span>
+        <span className="detail-reference">Ref. {product.id.slice(0, 8).toUpperCase()}</span>
       </div>
 
       <ProductGallery product={product} />

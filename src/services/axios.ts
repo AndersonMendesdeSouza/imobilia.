@@ -1,8 +1,16 @@
-import axios from "axios";
+import axios from 'axios'
+import { authService } from './auth.service'
 
 const api = axios.create({
-  baseURL: "http://localhost:3000"
-});
+  baseURL: import.meta.env.VITE_API_URL || '/api',
+})
 
+api.interceptors.request.use((config) => {
+  const token = authService.getToken()
+  if (token && authService.getSession(token)) {
+    config.headers.set('Authorization', `Bearer ${token}`)
+  }
+  return config
+})
 
-export default api;
+export default api

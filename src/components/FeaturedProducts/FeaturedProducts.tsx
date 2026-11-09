@@ -64,8 +64,8 @@ export function FeaturedProducts({ products }: { products: ImovelResponseDTO[] }
           >
             <img
               className="featured-image"
-              src={product.fotos[0].url}
-              alt={product.fotos[0].textoAlternativo}
+              src={(product.imagens.find((imagem) => imagem.isPrimary) ?? product.imagens[0])?.url}
+              alt={product.titulo}
               width="1200"
               height="800"
               loading={index === 0 ? 'eager' : 'lazy'}

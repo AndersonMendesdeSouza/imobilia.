@@ -41,15 +41,14 @@ export function ProductContact({ product }: { product: ImovelResponseDTO }) {
       </button>
       <div className="advertiser-contact" id="advertiser-contact" hidden={!showContact}>
         {telefone && <a href={`tel:${telefone}`}><Icon name="phone" size={16} />{telefone}</a>}
-        {!telefone && <p>Este é um anúncio ilustrativo. O contato do anunciante ainda não foi informado.</p>}
+        {!telefone && <p>O telefone do anunciante ainda não foi informado.</p>}
       </div>
       <p className="contact-hint">Encontre os detalhes. Imagine as possibilidades.</p>
       <Link className="advertiser" to={`/anunciantes/${product.usuario.id}`} aria-label={`Ver perfil de ${nome}`}>
-        <Avatar className="advertiser-avatar" foto={product.usuario.foto} icon="home" />
+        <Avatar className="advertiser-avatar" foto={product.usuario.img?.url ?? null} icon="home" />
         <div><strong>{nome}</strong><span>Ver todos os anúncios</span></div>
         <Icon name="arrow" size={17} />
       </Link>
-      <small className="demo-note">Anúncio de demonstração. Fotos e valores ilustrativos.</small>
     </aside>
   )
 }

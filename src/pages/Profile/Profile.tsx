@@ -1,7 +1,9 @@
 import { Link } from 'react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { ChangeEvent } from 'react'
+import { isAxiosError } from 'axios'
 import type { UserResponseDTO } from '../../dtos/response/user-response.dto'
-import { productService } from '../../services/product.service'
+import { useAuth } from '../../hooks/useAuth'
 import { ProductCard } from '../../components/ProductCard/ProductCard'
 import { Icon } from '../../components/Icon/Icon'
 import { Avatar } from '../../components/Avatar/Avatar'
@@ -15,13 +17,50 @@ interface ProfileProps {
 }
 
 export function Profile({ user, onLogout, publishedProductId }: ProfileProps) {
-  const products = productService.listByAdvertiser(user.id)
+  const { atualizarUsuario, atualizarFoto } = useAuth()
+  const products = user.imoveis.map((imovel) => ({ ...imovel, usuario: user }))
   const publishedProduct = publishedProductId ? products.find((product) => product.id === publishedProductId) : null
   const [error, setError] = useState('')
+  const [atualizandoFoto, setAtualizandoFoto] = useState(false)
+  const [fotoAtualizada, setFotoAtualizada] = useState(false)
+  const fotoInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     document.title = 'Meu perfil | Imobilia'
-  }, [])
+    let ativo = true
+    atualizarUsuario().catch(() => {
+      if (ativo) setError('Não foi possível atualizar seus imóveis. Tente novamente mais tarde.')
+    })
+    return () => { ativo = false }
+  }, [atualizarUsuario])
+
+  async function handlePhoto(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.currentTarget.files?.[0]
+    event.currentTarget.value = ''
+    if (!file || atualizandoFoto) return
+    setError('')
+    setFotoAtualizada(false)
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size === 0 || file.size > 1048576) {
+      setError('Escolha uma foto JPG, PNG ou WebP de até 1 MB.')
+      return
+    }
+
+    setAtualizandoFoto(true)
+    try {
+      await atualizarFoto(file)
+      setFotoAtualizada(true)
+    } catch (error) {
+      if (isAxiosError<{ message?: string | string[] }>(error)) {
+        const mensagem = error.response?.data?.message
+        setError(Array.isArray(mensagem) ? mensagem.join(' ') : mensagem || 'Não foi possível atualizar sua foto. Tente novamente.')
+      } else {
+        setError(error instanceof Error ? error.message : 'Não foi possível atualizar sua foto. Tente novamente.')
+      }
+    } finally {
+      setAtualizandoFoto(false)
+    }
+  }
 
   function handleLogout() {
     try {
@@ -35,7 +74,13 @@ export function Profile({ user, onLogout, publishedProductId }: ProfileProps) {
     <main id="main-content" className="directory-page container" tabIndex={-1}>
       <section className="owner-profile-header" aria-labelledby="my-profile-title">
         <div className="public-profile-identity">
-          <Avatar className="public-profile-avatar profile-avatar-large" foto={user.foto} />
+          <div className="profile-photo-control">
+            <Avatar className="public-profile-avatar profile-avatar-large" foto={user.img?.url ?? null} />
+            <input ref={fotoInputRef} type="file" accept="image/jpeg,image/png,image/webp" hidden disabled={atualizandoFoto} onChange={handlePhoto} aria-label="Selecionar nova foto do perfil" />
+            <button className="profile-photo-button" type="button" onClick={() => fotoInputRef.current?.click()} disabled={atualizandoFoto} aria-busy={atualizandoFoto} title="JPG, PNG ou WebP de até 1 MB">
+              <Icon name="images" size={14} /> {atualizandoFoto ? 'Atualizando…' : 'Atualizar foto'}
+            </button>
+          </div>
           <div>
             <span className="eyebrow">MINHA CONTA</span>
             <h1 id="my-profile-title">{user.nome}</h1>
@@ -49,14 +94,14 @@ export function Profile({ user, onLogout, publishedProductId }: ProfileProps) {
         </div>
       </section>
       {error && <p className="account-alert" role="alert">{error}</p>}
+      {fotoAtualizada && <p className="publication-success" role="status"><Icon name="check" size={18} /> Foto atualizada com sucesso.</p>}
       {publishedProduct && (
         <div className="publication-success" role="status">
           <Icon name="check" size={21} />
-          <span>Imóvel publicado na demonstração.</span>
+          <span>Imóvel publicado com sucesso.</span>
           <Link to={`/imoveis/${publishedProduct.id}`}>Ver anúncio <Icon name="arrow" size={16} /></Link>
         </div>
       )}
-      <p className="account-demo-notice">Sessão de demonstração. Os novos anúncios ficam salvos apenas neste navegador.</p>
       <section className="profile-products" aria-labelledby="my-products-title">
         <div className="results-toolbar">
           <div className="results-summary">

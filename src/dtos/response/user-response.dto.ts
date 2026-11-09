@@ -1,3 +1,5 @@
+import type { ImovelResponseDTO } from './imovel-response.dto'
+import type { ImgResponseDTO } from './img-response.dto'
 import type { PerfilUsuario } from '../enums'
 
 export interface UserResponseDTO {
@@ -6,7 +8,8 @@ export interface UserResponseDTO {
   email: string
   perfil: PerfilUsuario
   ativo: boolean
-  foto: string | null
+  img: ImgResponseDTO | null
+  imoveis: Omit<ImovelResponseDTO, 'usuario'>[]
   telefone: string | null
   descricao: string | null
   cidade: string
@@ -17,5 +20,5 @@ export interface UserResponseDTO {
 
 export type UsuarioPublico = Pick<
   UserResponseDTO,
-  'id' | 'nome' | 'foto' | 'telefone' | 'descricao' | 'cidade' | 'estado'
+  'id' | 'nome' | 'img' | 'telefone' | 'descricao' | 'cidade' | 'estado'
 >

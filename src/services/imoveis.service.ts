@@ -1,26 +1,19 @@
-import api from "./axios";
+import api from './axios'
+import type { ImovelRequestDTO } from '../dtos/request/imovel-request.dto'
+import type { ImovelResponseDTO } from '../dtos/response/imovel-response.dto'
 
 export const ImoveisService = {
-  create: async (dto: any) => {
-    const response = await api.post("/imoveis", dto);
-    return response.data;
-  }, 
-
-  update: async (companyId: string, dto: Partial<any>) => {
-    const response = await api.patch<any>(
-      `/company/${companyId}`,
-      dto,
-    );
-    return response.data;
+  async create(dto: ImovelRequestDTO, files: File[]): Promise<ImovelResponseDTO> {
+    const response = await api.postForm<ImovelResponseDTO>(
+      '/imovel',
+      { dto: JSON.stringify(dto), files },
+      { formSerializer: { indexes: null } },
+    )
+    return response.data
   },
 
-  findOne: async (id: string): Promise<any> => {
-    const response = await api.get<any>(`/imoveis/${id}`);
-    return response.data;
+  async findAll(): Promise<ImovelResponseDTO[]> {
+    const response = await api.get<ImovelResponseDTO[]>('/imovel')
+    return response.data
   },
-
-  findAll: async (): Promise<any[]> => {
-    const response = await api.get<any[]>(`/imoveis`);
-    return response.data;
-  },
-};
+}

@@ -12,21 +12,21 @@ import { RequireAuth } from './RequireAuth'
 
 interface AppRoutesProps {
   user: UserResponseDTO | null
-  onLogin: (user: UserResponseDTO) => void
   onLogout: () => void
   loginDestination: string
 }
 
-export function AppRoutes({ user, onLogin, onLogout, loginDestination }: AppRoutesProps) {
+export function AppRoutes({ user, onLogout, loginDestination }: AppRoutesProps) {
   const localizacao = useLocation()
   const [searchParams] = useSearchParams()
-  const finalidade = searchParams.get('finalidade') === 'venda' ? 'venda' : 'aluguel'
+  const finalidadeParam = searchParams.get('finalidade')
+  const finalidade = finalidadeParam === 'venda' || finalidadeParam === 'aluguel' ? finalidadeParam : undefined
 
   return (
     <Routes>
       <Route index element={<Navigate to="/imoveis" replace />} />
       <Route path="imoveis">
-        <Route index element={<Products key={finalidade} finalidade={finalidade} />} />
+        <Route index element={<Products key={finalidade ?? 'todos'} finalidade={finalidade} />} />
         <Route path=":productId" element={<ProductDetails key={localizacao.pathname} />} />
       </Route>
       <Route path="anunciantes">
@@ -35,9 +35,9 @@ export function AppRoutes({ user, onLogin, onLogout, loginDestination }: AppRout
       </Route>
       <Route path="mais">
         <Route index element={user ? <Navigate to="/perfil/sobre" replace /> : <More isLoggedIn={false} />} />
-        <Route path="login" element={user ? <Navigate to={loginDestination} replace /> : <Login onLogin={onLogin} />} />
+        <Route path="login" element={user ? <Navigate to={loginDestination} replace /> : <Login />} />
       </Route>
-      <Route element={<RequireAuth isLoggedIn={user !== null} />}>
+      <Route element={<RequireAuth />}>
         <Route path="perfil">
           <Route
             index

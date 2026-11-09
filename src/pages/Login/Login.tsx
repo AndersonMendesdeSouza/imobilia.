@@ -1,14 +1,14 @@
 import { Link } from 'react-router'
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import type { UserResponseDTO } from '../../dtos/response/user-response.dto'
-import { demoAccounts } from '../../data/demo-accounts'
-import { authService } from '../../services/auth.service'
+import { isAxiosError } from 'axios'
+import { useAuth } from '../../hooks/useAuth'
 import { Icon } from '../../components/Icon/Icon'
-import { Avatar } from '../../components/Avatar/Avatar'
 import '../Account.css'
 
-export function Login({ onLogin }: { onLogin: (user: UserResponseDTO) => void }) {
+export function Login() {
+  const { login, carregando, erroSessao, recarregarSessao } = useAuth()
+  const [entrando, setEntrando] = useState(false)
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [error, setError] = useState('')
@@ -17,16 +17,28 @@ export function Login({ onLogin }: { onLogin: (user: UserResponseDTO) => void })
     document.title = 'Acesso exclusivo para anunciantes | Imobilia'
   }, [])
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (entrando) return
     setError('')
+    setEntrando(true)
 
     try {
-      const { usuario } = authService.login({ email, senha })
-      onLogin(usuario)
+      await login({ usuario: email.trim().toLowerCase(), senha })
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Não foi possível entrar. Tente novamente.')
+      if (isAxiosError<{ message?: string | string[] }>(error)) {
+        const mensagem = error.response?.data?.message
+        setError(Array.isArray(mensagem) ? mensagem.join(' ') : mensagem || 'Não foi possível entrar. Tente novamente.')
+      } else {
+        setError(error instanceof Error ? error.message : 'Não foi possível entrar. Tente novamente.')
+      }
+    } finally {
+      setEntrando(false)
     }
+  }
+
+  if (carregando) {
+    return <main id="main-content" className="container not-found" tabIndex={-1} aria-busy="true"><p role="status">Restaurando sessão…</p></main>
   }
 
   return (
@@ -40,34 +52,21 @@ export function Login({ onLogin }: { onLogin: (user: UserResponseDTO) => void })
         <form className="login-form" onSubmit={handleSubmit}>
           <label className="account-field">
             <span>Email</span>
-            <input type="email" name="email" required autoComplete="username" placeholder="seu@email.com" value={email} onChange={(event) => { setEmail(event.target.value); setError('') }} />
+            <input type="email" name="email" required maxLength={254} autoComplete="username" placeholder="seu@email.com" value={email} onChange={(event) => { setEmail(event.target.value); setError('') }} />
           </label>
           <label className="account-field">
             <span>Senha</span>
-            <input type="password" name="senha" required autoComplete="current-password" placeholder="Digite sua senha" value={senha} onChange={(event) => { setSenha(event.target.value); setError('') }} />
+            <input type="password" name="senha" required maxLength={128} autoComplete="current-password" placeholder="Digite sua senha" value={senha} onChange={(event) => { setSenha(event.target.value); setError('') }} />
           </label>
-          {error && <p className="account-alert" role="alert">{error}</p>}
-          <button className="button button-primary account-submit" type="submit">Entrar <Icon name="arrow" size={19} /></button>
+          {(error || erroSessao) && <p className="account-alert" role="alert">{error || erroSessao}</p>}
+          {erroSessao && <button type="button" className="text-button" onClick={recarregarSessao}>Tentar restaurar sessão</button>}
+          <button className="button button-primary account-submit" type="submit" disabled={entrando} aria-busy={entrando}>{entrando ? 'Entrando…' : 'Entrar'} <Icon name="arrow" size={19} /></button>
         </form>
         <section className="login-support" aria-labelledby="login-support-title">
           <h2 id="login-support-title">Quer anunciar seus imóveis?</h2>
           <p>Entre em contato com o suporte para conhecer os planos e solicitar a criação da sua conta.</p>
           <small>O acesso é pago. As contas são criadas exclusivamente pela administração.</small>
         </section>
-        {import.meta.env.DEV && <details className="demo-accounts">
-          <summary>Contas de teste — desenvolvimento</summary>
-          <p>Escolha uma conta de teste para preencher o formulário.</p>
-          <div className="demo-account-options">
-            {demoAccounts.map((account) => (
-              <button key={account.usuarioId} type="button" onClick={() => { setEmail(account.email); setSenha(account.senha); setError('') }}>
-                <Avatar className="demo-account-avatar" foto={account.foto} icon="building" />
-                <span><strong>{account.nome}</strong><small>{account.email}</small></span>
-                <Icon name="arrow" size={16} />
-              </button>
-            ))}
-          </div>
-          <p>Senha das contas de teste: <strong>Imobilia123!</strong></p>
-        </details>}
       </section>
     </main>
   )

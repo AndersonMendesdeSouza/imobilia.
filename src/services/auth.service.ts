@@ -1,57 +1,50 @@
-import { demoAccounts } from '../data/demo-accounts'
-import type { UserRequestDTO } from '../dtos/request/user-request.dto'
-import type { UserResponseDTO } from '../dtos/response/user-response.dto'
-import { advertiserService } from './advertiser.service'
+export const TOKEN_KEY = 'imobilia.token'
 
-const sessionKey = 'imobilia.demo-session'
-
-function getDemoUser(usuarioId: string): UserResponseDTO | null {
-  const account = demoAccounts.find((account) => account.usuarioId === usuarioId && account.ativo)
-  const usuario = advertiserService.getById(usuarioId)
-  if (!account || !usuario) return null
-
-  return {
-    ...usuario,
-    email: account.email,
-    perfil: account.perfil,
-    ativo: account.ativo,
-    criadoEm: '2026-11-08T00:00:00.000Z',
-    atualizadoEm: '2026-11-08T00:00:00.000Z',
-  }
+interface SessaoToken {
+  usuarioId: string
+  expiraEm: number
 }
 
-// Esta sessão serve apenas para demonstrar as telas. Não substitui autenticação no servidor.
 export const authService = {
-  getCurrentUser(): UserResponseDTO | null {
+  getToken(): string | null {
     try {
-      const usuarioId = sessionStorage.getItem(sessionKey)
-      return usuarioId ? getDemoUser(usuarioId) : null
+      return localStorage.getItem(TOKEN_KEY)
     } catch {
       return null
     }
   },
 
-  login(input: Pick<UserRequestDTO, 'email' | 'senha'>): { usuario: UserResponseDTO } {
-    const email = input.email.trim().toLowerCase()
-    const account = demoAccounts.find((account) => account.email === email && account.senha === input.senha)
-    const usuario = account ? getDemoUser(account.usuarioId) : null
-
-    if (!usuario) throw new Error('Email ou senha de demonstração incorretos.')
-
+  saveToken(token: string) {
     try {
-      sessionStorage.setItem(sessionKey, usuario.id)
+      localStorage.setItem(TOKEN_KEY, token)
     } catch {
-      throw new Error('Não foi possível salvar a sessão neste navegador. Verifique se o armazenamento está habilitado.')
+      throw new Error('Não foi possível salvar a sessão neste navegador.')
     }
-
-    return { usuario }
   },
 
   logout() {
+    localStorage.removeItem(TOKEN_KEY)
+  },
+
+  // Esta leitura controla a interface; verificar a assinatura é responsabilidade da API.
+  getSession(token: string | null): SessaoToken | null {
+    if (!token) return null
+
     try {
-      sessionStorage.removeItem(sessionKey)
+      const partes = token.split('.')
+      if (partes.length !== 3 || !partes[0] || !partes[2]) return null
+      const base64 = partes[1].replace(/-/g, '+').replace(/_/g, '/')
+      const bytes = Uint8Array.from(atob(base64), (caractere) => caractere.charCodeAt(0))
+      const payload: unknown = JSON.parse(new TextDecoder().decode(bytes))
+      if (!payload || typeof payload !== 'object') return null
+      if (!('sub' in payload) || typeof payload.sub !== 'string') return null
+      if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(payload.sub)) return null
+      if (!('exp' in payload) || typeof payload.exp !== 'number' || !Number.isSafeInteger(payload.exp)) return null
+      const expiraEm = payload.exp * 1000
+      if (expiraEm <= Date.now()) return null
+      return { usuarioId: payload.sub, expiraEm }
     } catch {
-      throw new Error('Não foi possível encerrar a sessão. Tente novamente.')
+      return null
     }
   },
 }

@@ -4,7 +4,7 @@ import type { ImovelResponseDTO } from '../dtos/response/imovel-response.dto'
 import type { FinalidadeImovel, TipoImovel } from '../dtos/enums'
 import { brazilianStates } from '../data/states'
 import { advertiserService } from './advertiser.service'
-import { authService } from './auth.service'
+import { ImoveisService } from './imoveis.service'
 
 export interface FiltrosImoveis {
   finalidade?: FinalidadeImovel
@@ -18,8 +18,8 @@ export interface FiltrosImoveis {
 const storageKey = 'imobilia.demo-products'
 
 // Apenas a demonstração guarda as imagens como data URLs no navegador.
-interface StoredProductInput extends Omit<ImovelRequestDTO, 'imgs'> {
-  fotos: { url: string; textoAlternativo: string }[]
+interface StoredProductInput extends ImovelRequestDTO {
+  imagens: { url: string }[]
 }
 
 interface StoredProduct {
@@ -79,7 +79,7 @@ function convertLegacyProduct(record: LegacyStoredProduct): StoredProduct {
       quartos: input.bedrooms,
       banheiros: input.bathrooms,
       vagasGaragem: input.parkingSpaces,
-      fotos: [{ url: input.image, textoAlternativo: input.title }],
+      imagens: [{ url: input.image }],
       comodidades: [],
     },
   }
@@ -112,15 +112,12 @@ function validateProduct(input: StoredProductInput) {
   if (input.tipo !== 'lote' && (input.quartos < 1 || input.banheiros < 1)) {
     throw new Error('Informe pelo menos um quarto e um banheiro.')
   }
-  if (!Array.isArray(input.fotos) || input.fotos.length < 1 || input.fotos.length > 20) {
+  if (!Array.isArray(input.imagens) || input.imagens.length < 1 || input.imagens.length > 20) {
     throw new Error('Informe de 1 a 20 fotos do imóvel.')
   }
-  for (const foto of input.fotos) {
+  for (const foto of input.imagens) {
     if (!foto || typeof foto.url !== 'string' || foto.url.length > 1450000 || !/^(https?:\/\/\S+|\/(?!\/)\S+|data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2})$/.test(foto.url)) {
       throw new Error('Informe uma foto JPG, PNG ou WebP, ou um endereço de imagem válido.')
-    }
-    if (typeof foto.textoAlternativo !== 'string' || foto.textoAlternativo.trim().length < 3 || foto.textoAlternativo.length > 150) {
-      throw new Error('Informe uma descrição de 3 a 150 caracteres para cada foto.')
     }
   }
   if (!Array.isArray(input.comodidades) || input.comodidades.length > 50 || input.comodidades.some((item) => typeof item !== 'string' || item.length > 100)) {
@@ -137,6 +134,14 @@ function buildProduct(record: StoredProduct): ImovelResponseDTO {
 
   return {
     ...input,
+    imagens: input.imagens.map((imagem, index) => ({
+      id: `${record.id}-imagem-${index + 1}`,
+      url: imagem.url,
+      publicUrlId: `demo/${record.id}/${index + 1}`,
+      isPrimary: index === 0,
+      imovelId: record.id,
+      usuarioId: null,
+    })),
     id: record.id,
     usuarioId: record.usuarioId,
     usuario,
@@ -163,9 +168,15 @@ function readPublishedProducts(): StoredProduct[] {
 
     return records.map((saved: unknown) => {
       if (!saved || typeof saved !== 'object') throw new Error('Registro inválido.')
-      const record = 'input' in saved
+      let record = 'input' in saved
         ? convertLegacyProduct(saved as LegacyStoredProduct)
         : saved as StoredProduct
+
+      // Compatibilidade com anúncios salvos antes da troca de fotos por imagens.
+      if (record.entrada && 'fotos' in record.entrada) {
+        const { fotos, ...entrada } = record.entrada as StoredProductInput & { fotos: { url: string }[] }
+        record = { ...record, entrada: { ...entrada, imagens: fotos.map((foto) => ({ url: foto.url })) } }
+      }
 
       if (typeof record.id !== 'string' || !/^[a-f0-9-]{36}$/.test(record.id)) throw new Error('Identificador inválido.')
       if (typeof record.usuarioId !== 'string' || !advertiserService.getById(record.usuarioId)) throw new Error('Anunciante inválido.')
@@ -189,19 +200,6 @@ function getAllProducts(): ImovelResponseDTO[] {
 
 function normalizeLocation(value: string) {
   return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()
-}
-
-function readImageFile(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      if (typeof reader.result === 'string') resolve(reader.result)
-      else reject(new Error('Não foi possível carregar esta foto. Selecione outra.'))
-    }
-    reader.onerror = () => reject(new Error('Não foi possível ler esta foto. Selecione outra.'))
-    reader.onabort = () => reject(new Error('A leitura da foto foi interrompida. Tente novamente.'))
-    reader.readAsDataURL(file)
-  })
 }
 
 export const productService = {
@@ -228,51 +226,7 @@ export const productService = {
     return this.list({ usuarioId })
   },
 
-  async create(input: ImovelRequestDTO): Promise<ImovelResponseDTO> {
-    const usuario = authService.getCurrentUser()
-    if (!usuario) throw new Error('Entre na sua conta para publicar um imóvel.')
-
-    const { imgs, ...campos } = input
-    if (!Array.isArray(imgs) || imgs.length < 1 || imgs.length > 20) {
-      throw new Error('Informe de 1 a 20 imagens do imóvel.')
-    }
-    for (const imagem of imgs) {
-      if (!imagem || !(imagem.file instanceof File) || typeof imagem.isPrimary !== 'boolean') {
-        throw new Error('Cada imagem deve conter um arquivo e a indicação de foto principal.')
-      }
-      if (!['image/jpeg', 'image/png', 'image/webp'].includes(imagem.file.type) || imagem.file.size === 0 || imagem.file.size > 1048576) {
-        throw new Error('Escolha fotos JPG, PNG ou WebP de até 1 MB.')
-      }
-    }
-    if (imgs.filter((imagem) => imagem.isPrimary).length > 1) {
-      throw new Error('Escolha apenas uma imagem principal para o imóvel.')
-    }
-
-    const imagensOrdenadas = [...imgs].sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary))
-    const fotos = await Promise.all(imagensOrdenadas.map(async (imagem) => ({
-      url: await readImageFile(imagem.file),
-      textoAlternativo: input.titulo,
-    })))
-    const entrada: StoredProductInput = { ...campos, fotos }
-    validateProduct(entrada)
-
-    const records = readPublishedProducts()
-    const agora = new Date().toISOString()
-    const record: StoredProduct = {
-      id: crypto.randomUUID(),
-      usuarioId: usuario.id,
-      entrada,
-      criadoEm: agora,
-      atualizadoEm: agora,
-    }
-    const product = buildProduct(record)
-
-    try {
-      localStorage.setItem(storageKey, JSON.stringify([record, ...records]))
-    } catch {
-      throw new Error('Não foi possível salvar o anúncio. O armazenamento do navegador pode estar cheio ou indisponível.')
-    }
-
-    return product
+  async create(input: ImovelRequestDTO, files: File[] = []): Promise<ImovelResponseDTO> {
+    return ImoveisService.create(input, files)
   },
 }

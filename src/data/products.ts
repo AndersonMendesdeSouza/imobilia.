@@ -1,13 +1,13 @@
 import type { ImovelResponseDTO } from '../dtos/response/imovel-response.dto'
 import { imobiliaAdvertiser, auroraAdvertiser, marinaAdvertiser } from './advertisers'
 
-const livingRoom = { url: '/images/living-room.jpg', textoAlternativo: 'Sala de estar iluminada com sofá e decoração em tons naturais' }
-const kitchen = { url: '/images/kitchen.jpg', textoAlternativo: 'Cozinha integrada com bancada e armários planejados' }
-const bedroom = { url: '/images/bedroom.jpg', textoAlternativo: 'Quarto confortável com cama de casal e iluminação natural' }
+const livingRoom = { url: '/images/living-room.jpg' }
+const kitchen = { url: '/images/kitchen.jpg' }
+const bedroom = { url: '/images/bedroom.jpg' }
 const usuario = imobiliaAdvertiser
 
 // Dados ilustrativos, sem relação com imóveis ou anunciantes reais.
-const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualizadoEm'>[] = [
+const mockProducts: (Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualizadoEm' | 'imagens'> & { imagens: { url: string }[] })[] = [
   {
     id: 'casa-jardim-botanico', titulo: 'Casa Jardim Botânico', tipo: 'casa', finalidade: 'aluguel',
     destaque: true,
@@ -15,7 +15,7 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 180, quartos: 3, banheiros: 2, vagasGaragem: 2,
     descricao: 'Uma casa para desacelerar e aproveitar os pequenos momentos. Com ambientes amplos, muita luz natural e um jardim acolhedor, este imóvel reúne espaço e conforto para o dia a dia. A sala se conecta à área de jantar e à cozinha, criando um ambiente perfeito para receber. O bairro oferece ruas tranquilas e fácil acesso a parques, mercados e serviços.',
     comodidades: ['Jardim privativo', 'Área de serviço', 'Cozinha planejada', 'Quintal', 'Aceita pets', 'Churrasqueira'],
-    fotos: [{ url: '/images/house-garden.jpg', textoAlternativo: 'Casa com fachada clara, jardim e entrada arborizada' }, livingRoom, kitchen, bedroom], usuario,
+    imagens: [{ url: '/images/house-garden.jpg' }, livingRoom, kitchen, bedroom], usuario,
   },
   {
     id: 'apartamento-batel', titulo: 'Apartamento Essência Batel', tipo: 'apartamento', finalidade: 'aluguel',
@@ -24,7 +24,7 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 86, quartos: 2, banheiros: 2, vagasGaragem: 1,
     descricao: 'Um apartamento que combina praticidade e aconchego. A sala integrada recebe luz natural e abre espaço para viver, trabalhar e receber com conforto. Localizado em um bairro com cafés, restaurantes e serviços por perto, é uma boa escolha para quem gosta de fazer parte da vida da cidade.',
     comodidades: ['Varanda', 'Elevador', 'Portaria', 'Cozinha planejada', 'Área de serviço', 'Aceita pets'],
-    fotos: [livingRoom, kitchen, bedroom], usuario: auroraAdvertiser,
+    imagens: [livingRoom, kitchen, bedroom], usuario: auroraAdvertiser,
   },
   {
     id: 'casa-vista-serena', titulo: 'Casa Vista Serena', tipo: 'casa', finalidade: 'aluguel',
@@ -33,7 +33,7 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 240, quartos: 4, banheiros: 3, vagasGaragem: 2,
     descricao: 'Espaço de sobra para criar boas memórias. Esta casa tem ambientes integrados, quartos confortáveis e uma área externa ideal para os finais de semana. O projeto valoriza a entrada de luz e a convivência, em uma região residencial cercada de natureza.',
     comodidades: ['Jardim privativo', 'Churrasqueira', 'Quintal', 'Área de serviço', 'Suíte', 'Aceita pets'],
-    fotos: [{ url: '/images/house-modern.jpg', textoAlternativo: 'Casa contemporânea com fachada branca e jardim verde' }, livingRoom, bedroom, kitchen], usuario: auroraAdvertiser,
+    imagens: [{ url: '/images/house-modern.jpg' }, livingRoom, bedroom, kitchen], usuario: auroraAdvertiser,
   },
   {
     id: 'apartamento-luz-do-dia', titulo: 'Apartamento Luz do Dia', tipo: 'apartamento', finalidade: 'aluguel',
@@ -42,7 +42,7 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 64, quartos: 2, banheiros: 1, vagasGaragem: 1,
     descricao: 'Leve, iluminado e bem distribuído. Um apartamento pensado para uma rotina prática, com sala aconchegante, cozinha funcional e quartos tranquilos. A localização facilita o acesso ao transporte, ao comércio e a tudo que você precisa no dia a dia.',
     comodidades: ['Elevador', 'Portaria', 'Área de serviço', 'Cozinha planejada'],
-    fotos: [{ url: '/images/apartment.jpg', textoAlternativo: 'Apartamento com sala clara, móveis de madeira e janelas amplas' }, kitchen, bedroom], usuario,
+    imagens: [{ url: '/images/apartment.jpg' }, kitchen, bedroom], usuario,
   },
   {
     id: 'casa-refugio-verde', titulo: 'Casa Refúgio Verde', tipo: 'casa', finalidade: 'aluguel',
@@ -51,7 +51,7 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 156, quartos: 3, banheiros: 2, vagasGaragem: 2,
     descricao: 'Uma casa acolhedora, com jardim e ambientes que convidam a ficar. A planta oferece uma boa separação entre a área social e os quartos. O quintal traz espaço para plantas, brincadeiras e momentos ao ar livre.',
     comodidades: ['Quintal', 'Jardim privativo', 'Churrasqueira', 'Área de serviço', 'Aceita pets'],
-    fotos: [{ url: '/images/house-cozy.jpg', textoAlternativo: 'Casa acolhedora com varanda, gramado e árvores ao redor' }, livingRoom, kitchen, bedroom], usuario: marinaAdvertiser,
+    imagens: [{ url: '/images/house-cozy.jpg' }, livingRoom, kitchen, bedroom], usuario: marinaAdvertiser,
   },
   {
     id: 'apartamento-horizonte', titulo: 'Apartamento Horizonte', tipo: 'apartamento', finalidade: 'aluguel',
@@ -60,7 +60,7 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 112, quartos: 3, banheiros: 2, vagasGaragem: 2,
     descricao: 'Vista aberta e ambientes bem resolvidos para viver com conforto. A sala espaçosa permite diferentes composições, e os quartos oferecem privacidade para toda a família. O condomínio fica próximo de serviços e áreas verdes.',
     comodidades: ['Varanda', 'Elevador', 'Portaria', 'Suíte', 'Cozinha planejada', 'Área de serviço'],
-    fotos: [{ url: '/images/apartment-bright.jpg', textoAlternativo: 'Sala de apartamento com amplas janelas e decoração contemporânea' }, kitchen, bedroom], usuario: auroraAdvertiser,
+    imagens: [{ url: '/images/apartment-bright.jpg' }, kitchen, bedroom], usuario: auroraAdvertiser,
   },
   {
     id: 'casa-jardins-do-sul', titulo: 'Casa Jardins do Sul', tipo: 'casa', finalidade: 'aluguel',
@@ -69,7 +69,7 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 265, quartos: 4, banheiros: 3, vagasGaragem: 3,
     descricao: 'Um refúgio com espaço para viver do seu jeito. A casa reúne uma área social generosa, cozinha integrada e quartos confortáveis. O jardim e a área de lazer completam os espaços para aproveitar bons momentos em casa.',
     comodidades: ['Jardim privativo', 'Churrasqueira', 'Suíte', 'Quintal', 'Área de serviço', 'Aceita pets'],
-    fotos: [{ url: '/images/house-pool.jpg', textoAlternativo: 'Casa com área externa, piscina e espaço de convivência' }, livingRoom, kitchen, bedroom], usuario,
+    imagens: [{ url: '/images/house-pool.jpg' }, livingRoom, kitchen, bedroom], usuario,
   },
   {
     id: 'apartamento-boa-vista', titulo: 'Apartamento Boa Vista', tipo: 'apartamento', finalidade: 'aluguel',
@@ -78,7 +78,7 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 58, quartos: 2, banheiros: 1, vagasGaragem: 1,
     descricao: 'O essencial para uma vida mais leve. Um apartamento compacto e bem distribuído, com ambientes claros e uma localização prática. Ideal para quem procura um espaço acolhedor para começar um novo capítulo.',
     comodidades: ['Elevador', 'Portaria', 'Área de serviço', 'Aceita pets'],
-    fotos: [{ url: '/images/apartment-warm.jpg', textoAlternativo: 'Sala acolhedora com sofá, plantas e tons de madeira' }, bedroom, kitchen], usuario,
+    imagens: [{ url: '/images/apartment-warm.jpg' }, bedroom, kitchen], usuario,
   },
   {
     id: 'casa-bosque', titulo: 'Casa Bosque das Araucárias', tipo: 'casa', finalidade: 'venda',
@@ -87,7 +87,7 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 210, quartos: 3, banheiros: 3, vagasGaragem: 2,
     descricao: 'Uma casa espaçosa para escrever uma nova história. Com jardim, ambientes integrados e acabamentos em tons naturais, oferece conforto em uma região residencial tranquila. Os espaços externos convidam a aproveitar a vida ao ar livre.',
     comodidades: ['Jardim privativo', 'Churrasqueira', 'Suíte', 'Quintal', 'Cozinha planejada', 'Aceita pets'],
-    fotos: [{ url: '/images/house-modern.jpg', textoAlternativo: 'Casa ampla de arquitetura contemporânea cercada de verde' }, livingRoom, kitchen, bedroom], usuario: auroraAdvertiser,
+    imagens: [{ url: '/images/house-modern.jpg' }, livingRoom, kitchen, bedroom], usuario: auroraAdvertiser,
   },
   {
     id: 'apartamento-vila-izar', titulo: 'Apartamento Vila Izar', tipo: 'apartamento', finalidade: 'venda',
@@ -96,7 +96,7 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 82, quartos: 2, banheiros: 2, vagasGaragem: 1,
     descricao: 'Ambientes claros, planta funcional e um endereço que aproxima você de tudo. O apartamento possui sala integrada, cozinha planejada e uma suíte confortável. Uma opção para quem quer construir uma rotina com mais praticidade.',
     comodidades: ['Elevador', 'Portaria', 'Suíte', 'Cozinha planejada', 'Área de serviço'],
-    fotos: [livingRoom, bedroom, kitchen], usuario,
+    imagens: [livingRoom, bedroom, kitchen], usuario,
   },
   {
     id: 'casa-parque-das-flores', titulo: 'Casa Parque das Flores', tipo: 'casa', finalidade: 'venda',
@@ -105,7 +105,7 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 165, quartos: 3, banheiros: 2, vagasGaragem: 2,
     descricao: 'Conforto e espaço em uma casa com personalidade. A área social acolhedora se conecta à cozinha, e o quintal oferece liberdade para criar o seu cantinho preferido. A região tem comércio e serviços para facilitar o dia a dia.',
     comodidades: ['Quintal', 'Churrasqueira', 'Jardim privativo', 'Área de serviço', 'Aceita pets'],
-    fotos: [{ url: '/images/house-garden.jpg', textoAlternativo: 'Casa com jardim frontal e fachada em tons neutros' }, kitchen, livingRoom, bedroom], usuario: marinaAdvertiser,
+    imagens: [{ url: '/images/house-garden.jpg' }, kitchen, livingRoom, bedroom], usuario: marinaAdvertiser,
   },
   {
     id: 'apartamento-alto-cabral', titulo: 'Apartamento Alto Cabral', tipo: 'apartamento', finalidade: 'venda',
@@ -114,7 +114,7 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 118, quartos: 3, banheiros: 2, vagasGaragem: 2,
     descricao: 'Um apartamento com amplitude, luz natural e espaço para receber. A planta valoriza a circulação entre os ambientes, com uma sala generosa e quartos reservados. Um lugar para viver bem em um bairro arborizado.',
     comodidades: ['Varanda', 'Elevador', 'Portaria', 'Suíte', 'Área de serviço', 'Cozinha planejada'],
-    fotos: [{ url: '/images/apartment-bright.jpg', textoAlternativo: 'Apartamento espaçoso com sala de estar e luz natural' }, bedroom, kitchen], usuario,
+    imagens: [{ url: '/images/apartment-bright.jpg' }, bedroom, kitchen], usuario,
   },
   {
     id: 'casa-alameda-ipes', titulo: 'Casa Alameda dos Ipês', tipo: 'casa', finalidade: 'venda',
@@ -123,7 +123,7 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 245, quartos: 4, banheiros: 3, vagasGaragem: 2,
     descricao: 'Uma casa com ambientes amplos, luz natural e espaço para receber. A área social integrada se abre para o jardim, enquanto os quartos oferecem conforto e privacidade. A área externa completa o espaço para aproveitar a rotina e os finais de semana em família.',
     comodidades: ['Jardim privativo', 'Churrasqueira', 'Suíte', 'Área de serviço', 'Cozinha planejada', 'Aceita pets'],
-    fotos: [{ url: '/images/house-pool.jpg', textoAlternativo: 'Casa com jardim e área externa de convivência, imagem ilustrativa' }, livingRoom, kitchen, bedroom], usuario: auroraAdvertiser,
+    imagens: [{ url: '/images/house-pool.jpg' }, livingRoom, kitchen, bedroom], usuario: auroraAdvertiser,
   },
   {
     id: 'lote-jardim-americas', titulo: 'Lote Jardim das Américas', tipo: 'lote', finalidade: 'aluguel',
@@ -132,9 +132,9 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 360, quartos: 0, banheiros: 0, vagasGaragem: 0,
     descricao: 'Um espaço aberto para o seu próximo projeto. Lote plano de 360 m² em uma região com comércio e serviços próximos. A área possui acesso por rua asfaltada e infraestrutura no entorno. As possibilidades de uso devem ser confirmadas conforme o zoneamento e as regras do município.',
     comodidades: ['Terreno plano', 'Rua asfaltada', 'Rede de água na rua', 'Rede elétrica na rua'],
-    fotos: [
-      { url: '/images/land-open.jpg', textoAlternativo: 'Área aberta com vegetação baixa e vista para o horizonte, imagem ilustrativa' },
-      { url: '/images/land-green.jpg', textoAlternativo: 'Área verde ampla sob céu aberto, imagem ilustrativa' },
+    imagens: [
+      { url: '/images/land-open.jpg' },
+      { url: '/images/land-green.jpg' },
     ], usuario,
   },
   {
@@ -144,9 +144,9 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 650, quartos: 0, banheiros: 0, vagasGaragem: 0,
     descricao: 'Amplitude e uma localização prática para tirar ideias do papel. Este lote de 650 m² oferece acesso fácil e espaço para diferentes projetos. Consulte as condições de locação e a viabilidade da atividade pretendida antes de contratar.',
     comodidades: ['Terreno plano', 'Acesso por via pública', 'Rede elétrica na rua', 'Comércio próximo'],
-    fotos: [
-      { url: '/images/land-green.jpg', textoAlternativo: 'Terreno aberto com gramado e vegetação ao redor, imagem ilustrativa' },
-      { url: '/images/land-open.jpg', textoAlternativo: 'Paisagem de área aberta, imagem ilustrativa' },
+    imagens: [
+      { url: '/images/land-green.jpg' },
+      { url: '/images/land-open.jpg' },
     ], usuario,
   },
   {
@@ -156,9 +156,9 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 450, quartos: 0, banheiros: 0, vagasGaragem: 0,
     descricao: 'O começo de um projeto com a sua identidade. Lote de 450 m² em região residencial arborizada, com espaço para planejar sua futura casa. A implantação e a construção dependem da aprovação dos órgãos responsáveis e das regras de uso do solo.',
     comodidades: ['Região residencial', 'Rua asfaltada', 'Rede de água na rua', 'Área arborizada'],
-    fotos: [
-      { url: '/images/land-green.jpg', textoAlternativo: 'Área verde em região tranquila, imagem ilustrativa' },
-      { url: '/images/land-open.jpg', textoAlternativo: 'Vista ampla de terreno aberto, imagem ilustrativa' },
+    imagens: [
+      { url: '/images/land-green.jpg' },
+      { url: '/images/land-open.jpg' },
     ], usuario,
   },
   {
@@ -168,9 +168,9 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
     area: 600, quartos: 0, banheiros: 0, vagasGaragem: 0,
     descricao: 'Mais espaço para construir novas possibilidades. Um lote de 600 m² com acesso à infraestrutura da região e serviços nas proximidades. Uma opção para planejar com calma o seu próximo endereço, respeitando o zoneamento e os parâmetros de construção locais.',
     comodidades: ['Terreno plano', 'Rua asfaltada', 'Rede elétrica na rua', 'Serviços próximos'],
-    fotos: [
-      { url: '/images/land-open.jpg', textoAlternativo: 'Terreno amplo com vegetação e céu aberto, imagem ilustrativa' },
-      { url: '/images/land-green.jpg', textoAlternativo: 'Área verde para ilustrar o anúncio do lote' },
+    imagens: [
+      { url: '/images/land-open.jpg' },
+      { url: '/images/land-green.jpg' },
     ], usuario,
   },
 ]
@@ -178,6 +178,14 @@ const mockProducts: Omit<ImovelResponseDTO, 'usuarioId' | 'criadoEm' | 'atualiza
 export const products: ImovelResponseDTO[] = mockProducts.map((imovel) => ({
   ...imovel,
   usuarioId: imovel.usuario.id,
+  imagens: imovel.imagens.map((imagem, index) => ({
+    id: `${imovel.id}-imagem-${index + 1}`,
+    url: imagem.url,
+    publicUrlId: `demo/${imovel.id}/${index + 1}`,
+    isPrimary: index === 0,
+    imovelId: imovel.id,
+    usuarioId: null,
+  })),
   criadoEm: '2026-11-08T00:00:00.000Z',
   atualizadoEm: '2026-11-08T00:00:00.000Z',
 }))

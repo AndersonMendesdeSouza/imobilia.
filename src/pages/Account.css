@@ -248,6 +248,49 @@
   background: #fff;
 }
 
+.owner-profile-header .public-profile-identity {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.owner-profile-header .public-profile-identity > div:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.profile-photo-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.profile-photo-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid #e0e5eb;
+  border-radius: 14px;
+  background: #fff;
+  color: #62728a;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.profile-photo-button:hover:not(:disabled) {
+  background: var(--accent-soft);
+  border-color: #e8ddc2;
+}
+
+.profile-photo-button:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
 .owner-profile-actions {
   display: flex;
   flex-wrap: wrap;
@@ -440,5 +483,11 @@
 
   .publish-counts {
     gap: 10px;
+  }
+}
+
+@media (max-width: 359px) {
+  .owner-profile-header .public-profile-identity {
+    flex-wrap: wrap;
   }
 }

@@ -4,7 +4,8 @@ import type { ChangeEvent, FormEvent } from 'react'
 import type { ImovelRequestDTO } from '../../dtos/request/imovel-request.dto'
 import type { TipoImovel } from '../../dtos/enums'
 import { brazilianStates } from '../../data/states'
-import { productService } from '../../services/product.service'
+import { ImoveisService } from '../../services/imoveis.service'
+import { isAxiosError } from 'axios'
 import { Icon } from '../../components/Icon/Icon'
 import '../Account.css'
 
@@ -83,16 +84,20 @@ export function PublishProduct() {
       banheiros: isLand ? 0 : Number(form.get('banheiros')),
       vagasGaragem: isLand ? 0 : Number(form.get('vagasGaragem')),
       descricao: String(form.get('descricao') ?? ''),
-      imgs: [{ file, isPrimary: true }],
       comodidades: [],
     }
 
     try {
       setIsPublishing(true)
-      const product = await productService.create(input)
-      navigate(`/perfil?publicado=${product.id}`)
+      const product = await ImoveisService.create(input, [file])
+      navigate(`/imoveis/${product.id}`)
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Não foi possível publicar. Tente novamente.')
+      if (isAxiosError<{ message?: string | string[] }>(error)) {
+        const mensagem = error.response?.data?.message
+        setError(Array.isArray(mensagem) ? mensagem.join(' ') : mensagem || 'Não foi possível publicar. Tente novamente.')
+      } else {
+        setError(error instanceof Error ? error.message : 'Não foi possível publicar. Tente novamente.')
+      }
     } finally {
       setIsPublishing(false)
     }
@@ -149,7 +154,7 @@ export function PublishProduct() {
         <fieldset className="publish-section">
           <legend>Foto principal</legend>
           <label className="account-field"><span>Escolha a foto que vai apresentar seu imóvel</span><input name="foto" type="file" accept="image/jpeg,image/png,image/webp" required onChange={handlePhoto} aria-describedby="photo-hint" /></label>
-          <p className="account-field-hint" id="photo-hint">JPG, PNG ou WebP. Tamanho máximo de 1 MB para esta demonstração.</p>
+          <p className="account-field-hint" id="photo-hint">JPG, PNG ou WebP. Tamanho máximo de 1 MB.</p>
           {isReadingPhoto && <p className="account-field-hint" role="status">Carregando foto…</p>}
           {photoError && <p className="account-alert" role="alert">{photoError}</p>}
           {image && <img className="publish-photo-preview" src={image} alt="Prévia da foto principal do anúncio" />}

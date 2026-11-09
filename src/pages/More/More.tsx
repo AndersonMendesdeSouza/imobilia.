@@ -57,7 +57,7 @@ export function More({ isLoggedIn }: { isLoggedIn: boolean }) {
         </details>
         <details>
           <summary>Como funciona a publicação de imóveis?</summary>
-          <p>Entre com uma conta de demonstração e abra seu Perfil para publicar um imóvel. Nesta versão, os novos anúncios ficam salvos apenas no navegador utilizado.</p>
+          <p>Entre com a conta fornecida pela nossa equipe e abra seu Perfil para publicar um imóvel. Os anúncios publicados aparecerão na busca e no seu perfil.</p>
         </details>
       </section>
     </main>
