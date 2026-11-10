@@ -16,4 +16,5 @@ export interface ImovelRequestDTO {
   banheiros: number
   vagasGaragem: number
   comodidades: string[]
+  imagensRemovidas?: string[]
 }

@@ -22,8 +22,12 @@ export const ImoveisService = {
     return response.data
   },
 
-  async update(id: string, dto: Partial<ImovelRequestDTO>): Promise<ImovelResponseDTO> {
-    const response = await api.patch<ImovelResponseDTO>(`/imovel/${id}`, dto)
+  async update(id: string, dto: Partial<ImovelRequestDTO>, files: File[] = []): Promise<ImovelResponseDTO> {
+    const response = await api.patchForm<ImovelResponseDTO>(
+      `/imovel/${id}`,
+      { dto: JSON.stringify(dto), files },
+      { formSerializer: { indexes: null } },
+    )
     return response.data
   },
 

@@ -22,12 +22,16 @@ export function PublishProduct() {
   const [loadAttempt, setLoadAttempt] = useState(0)
   const [propertyType, setPropertyType] = useState<TipoImovel>('casa')
   const [photos, setPhotos] = useState<{ file: File; preview: string }[]>([])
+  const [removedImageIds, setRemovedImageIds] = useState<string[]>([])
   const [photoError, setPhotoError] = useState('')
   const [error, setError] = useState('')
   const [isPublishing, setIsPublishing] = useState(false)
   const previewUrlsRef = useRef<string[]>([])
   const isLand = propertyType === 'lote'
-  const savedImages = [...(existingProperty?.imagens ?? [])].sort((first, second) => Number(second.isPrimary) - Number(first.isPrimary))
+  const savedImages = [...(existingProperty?.imagens ?? [])]
+    .filter((image) => !removedImageIds.includes(image.id))
+    .sort((first, second) => Number(second.isPrimary) - Number(first.isPrimary))
+  const photoCount = savedImages.length + photos.length
   let submitLabel = isEditing ? 'Salvar alterações' : 'Publicar imóvel'
   if (isPublishing) submitLabel = isEditing ? 'Salvando…' : 'Publicando…'
 
@@ -67,13 +71,14 @@ export function PublishProduct() {
   }, [])
 
   function handlePhotos(event: ChangeEvent<HTMLInputElement>) {
+    if (isPublishing) return
     const files = Array.from(event.currentTarget.files ?? [])
     event.currentTarget.value = ''
     if (!files.length) return
 
     setPhotoError('')
 
-    if (photos.length + files.length > 20) {
+    if (photoCount + files.length > 20) {
       setPhotoError('Selecione no máximo 20 fotos por imóvel.')
       return
     }
@@ -102,11 +107,17 @@ export function PublishProduct() {
     setPhotoError('')
   }
 
+  function handleRemoveSavedImage(id: string) {
+    if (isPublishing) return
+    setRemovedImageIds((current) => [...current, id])
+    setPhotoError('')
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (isPublishing) return
     setError('')
-    if (!isEditing && !photos.length) {
+    if (!photoCount) {
       setPhotoError('Selecione ao menos uma foto do imóvel para continuar.')
       return
     }
@@ -133,7 +144,7 @@ export function PublishProduct() {
     try {
       setIsPublishing(true)
       if (productId) {
-        await ImoveisService.update(productId, input)
+        await ImoveisService.update(productId, { ...input, imagensRemovidas: removedImageIds }, photos.map((photo) => photo.file))
         navigate('/perfil')
       } else {
         const product = await ImoveisService.create(input, photos.map((photo) => photo.file))
@@ -219,37 +230,33 @@ export function PublishProduct() {
         </fieldset>
         <fieldset className="publish-section">
           <legend>Fotos do imóvel</legend>
-          {isEditing && (
-            <div className="publish-photo-grid">
-              {savedImages.map((image, index) => (
-                <figure className="publish-photo-item" key={image.id}>
-                  <img className="publish-photo-preview" src={image.url} alt={`Foto ${index + 1} do imóvel`} />
-                  <figcaption>{index === 0 ? 'Foto principal' : `Foto ${index + 1}`}</figcaption>
-                </figure>
-              ))}
-            </div>
-          )}
-          {!isEditing && (
+          <label className="account-field"><span>Adicione fotos do imóvel</span><input name="fotos" type="file" accept="image/jpeg,image/png,image/webp" multiple required={!photoCount} disabled={isPublishing} onChange={handlePhotos} aria-describedby="photo-hint" /></label>
+          <p className="account-field-hint" id="photo-hint">Você pode adicionar fotos aos poucos, até 20 no total. JPG, PNG ou WebP, com até 1 MB cada. A primeira será a foto principal.</p>
+          {isEditing && <p className="account-field-hint">As fotos adicionadas e removidas serão atualizadas ao salvar as alterações.</p>}
+          {photoError && <p className="account-alert" role="alert">{photoError}</p>}
+          {photoCount > 0 && (
             <>
-              <label className="account-field"><span>Adicione fotos do imóvel</span><input name="fotos" type="file" accept="image/jpeg,image/png,image/webp" multiple required={!photos.length} disabled={isPublishing} onChange={handlePhotos} aria-describedby="photo-hint" /></label>
-              <p className="account-field-hint" id="photo-hint">Você pode adicionar fotos aos poucos, até 20 no total. JPG, PNG ou WebP, com até 1 MB cada. A primeira será a foto principal.</p>
-              {photoError && <p className="account-alert" role="alert">{photoError}</p>}
-              {photos.length > 0 && (
-                <>
-                  <p className="account-field-hint" role="status">{photos.length} {photos.length === 1 ? 'foto selecionada' : 'fotos selecionadas'}</p>
-                  <div className="publish-photo-grid">
-                    {photos.map((photo, index) => (
-                      <figure className="publish-photo-item" key={photo.preview}>
-                        <img className="publish-photo-preview" src={photo.preview} alt={`Prévia da foto ${index + 1} do imóvel`} />
-                        <button className="publish-photo-remove" type="button" onClick={() => handleRemovePhoto(photo.preview)} disabled={isPublishing} aria-label={`Remover foto ${index + 1}: ${photo.file.name}`} title="Remover foto">
-                          <Icon name="close" size={18} />
-                        </button>
-                        <figcaption>{index === 0 ? 'Foto principal' : `Foto ${index + 1}`}</figcaption>
-                      </figure>
-                    ))}
-                  </div>
-                </>
-              )}
+              <p className="account-field-hint" role="status">{photoCount} {photoCount === 1 ? 'foto selecionada' : 'fotos selecionadas'}</p>
+              <div className="publish-photo-grid">
+                {savedImages.map((image, index) => (
+                  <figure className="publish-photo-item" key={image.id}>
+                    <img className="publish-photo-preview" src={image.url} alt={`Foto ${index + 1} do imóvel`} />
+                    <button className="publish-photo-remove" type="button" onClick={() => handleRemoveSavedImage(image.id)} disabled={isPublishing} aria-label={`Remover foto ${index + 1} do imóvel`} title="Remover foto">
+                      <Icon name="close" size={18} />
+                    </button>
+                    <figcaption>{index === 0 ? 'Foto principal' : `Foto ${index + 1}`}</figcaption>
+                  </figure>
+                ))}
+                {photos.map((photo, index) => (
+                  <figure className="publish-photo-item" key={photo.preview}>
+                    <img className="publish-photo-preview" src={photo.preview} alt={`Prévia da foto ${savedImages.length + index + 1} do imóvel`} />
+                    <button className="publish-photo-remove" type="button" onClick={() => handleRemovePhoto(photo.preview)} disabled={isPublishing} aria-label={`Remover foto ${savedImages.length + index + 1}: ${photo.file.name}`} title="Remover foto">
+                      <Icon name="close" size={18} />
+                    </button>
+                    <figcaption>{savedImages.length + index === 0 ? 'Foto principal' : `Foto ${savedImages.length + index + 1}`}</figcaption>
+                  </figure>
+                ))}
+              </div>
             </>
           )}
         </fieldset>
