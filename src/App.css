@@ -249,6 +249,24 @@
 .product-content {
   padding: 17px 6px 17px;
 }
+.transaction-tag {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 9px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 550;
+  line-height: 1.4;
+}
+.transaction-tag-venda {
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+.transaction-tag-aluguel {
+  background: #edf2f8;
+  color: #3c597c;
+}
 .product-content h2 {
   font-size: 17px;
   font-weight: 550;

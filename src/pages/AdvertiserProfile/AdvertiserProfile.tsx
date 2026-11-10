@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { UserService } from '../../services/user.service'
 import type { UserResponseDTO } from '../../dtos/response/user-response.dto'
 import { isAxiosError } from 'axios'
-import { ProductCard } from '../../components/ProductCard/ProductCard'
+import { ProductCarousels } from '../../components/ProductCarousel/ProductCarousels'
 import { Icon } from '../../components/Icon/Icon'
 import { Avatar } from '../../components/Avatar/Avatar'
 import '../Advertisers/Advertisers.css'
@@ -132,9 +132,7 @@ export function AdvertiserProfile() {
           </div>
         </div>
         {products.length > 0 ? (
-          <div className="products-grid">
-            {products.map((product) => <ProductCard product={product} key={product.id} />)}
-          </div>
+          <ProductCarousels products={products} />
         ) : (
           <div className="empty-state">
             <span className="empty-icon"><Icon name="home" size={30} /></span>

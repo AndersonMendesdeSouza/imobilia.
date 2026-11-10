@@ -30,6 +30,7 @@ function compile(file) {
 const load = (file) => import(pathToFileURL(compile(path.join(root, file))))
 const { authService, TOKEN_KEY } = await load('src/services/auth.service.ts')
 const { UserService } = await load('src/services/user.service.ts')
+const { ImoveisService } = await load('src/services/imoveis.service.ts')
 const { default: api } = await load('src/services/axios.ts')
 const storage = new Map()
 let bloquearLeitura = false
@@ -124,4 +125,32 @@ test('o upload de foto continua usando somente o campo file', async () => {
   assert.ok(chamada.data instanceof FormData)
   assert.deepEqual([...chamada.data.keys()], ['file'])
   assert.equal(chamada.data.get('file').name, 'perfil.png')
+})
+
+test('editar imóvel envia DTO, arquivos e token no PATCH multipart', async () => {
+  const jwt = token()
+  authService.saveToken(jwt)
+  const files = [
+    new File(['foto-1'], 'fachada.png', { type: 'image/png' }),
+    new File(['foto-2'], 'sala.png', { type: 'image/png' }),
+  ]
+  const dto = { titulo: 'Casa atualizada', imagensRemovidas: ['imagem-antiga'] }
+
+  await ImoveisService.update('imovel-1', dto, files)
+
+  assert.equal(chamada.url, '/imovel/imovel-1')
+  assert.equal(chamada.method, 'patch')
+  assert.equal(chamada.headers.get('Authorization'), `Bearer ${jwt}`)
+  assert.ok(chamada.data instanceof FormData)
+  assert.deepEqual(JSON.parse(chamada.data.get('dto')), dto)
+  assert.deepEqual(chamada.data.getAll('files').map((file) => file.name), ['fachada.png', 'sala.png'])
+})
+
+test('editar dados sem arquivos não exige reenviar as fotos existentes', async () => {
+  const dto = { titulo: 'Casa atualizada' }
+  await ImoveisService.update('imovel-1', dto)
+
+  assert.equal(chamada.method, 'patch')
+  assert.deepEqual(JSON.parse(chamada.data.get('dto')), dto)
+  assert.deepEqual(chamada.data.getAll('files'), [])
 })

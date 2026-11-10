@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import type { FormEvent } from 'react'
 import type { TipoImovel, FinalidadeImovel } from '../../dtos/enums'
 import { useImoveis } from '../../hooks/useImoveis'
-import { ProductCard } from '../../components/ProductCard/ProductCard'
+import { ProductCarousels } from '../../components/ProductCarousel/ProductCarousels'
 import { FeaturedProducts } from '../../components/FeaturedProducts/FeaturedProducts'
 import { Icon } from '../../components/Icon/Icon'
 import './Products.css'
@@ -184,9 +184,7 @@ export function Products({ finalidade }: { finalidade?: FinalidadeImovel }) {
           </div>
         )}
         {!carregando && !erro && (products.length > 0 ? (
-          <div className="products-grid">
-            {products.map((product) => <ProductCard key={product.id} product={product} />)}
-          </div>
+          <ProductCarousels products={products} />
         ) : (
           <div className="empty-state">
             <span className="empty-icon"><Icon name="search" size={30} /></span>

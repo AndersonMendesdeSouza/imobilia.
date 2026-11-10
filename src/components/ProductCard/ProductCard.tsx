@@ -34,12 +34,15 @@ export function ProductCard({ product, onEdit, onDelete, disabled = false }: Pro
           <span className="price-tag">{valor}{product.finalidade === 'aluguel' && <small>/mês</small>}</span>
         </div>
         <div className="product-content">
+          <span className={`transaction-tag transaction-tag-${product.finalidade}`}>
+            {product.finalidade === 'aluguel' ? 'Para alugar' : 'À venda'}
+          </span>
           <h2>{product.titulo}</h2>
           <p className="product-neighborhood">{product.bairro}</p>
           <p className="product-location"><Icon name="pin" size={14} />{product.cidade}, {product.estado}</p>
           <div className={`product-features${isLand ? ' land-features' : ''}`}>
             <span>
-              <Icon name="area" size={17} /><strong>{product.area} m²</strong>
+              <Icon name="area" size={17} /><strong>{product.area.toLocaleString('pt-BR')} m²</strong>
               <small>{isLand ? 'Área total' : 'Área útil'}</small>
             </span>
             {!isLand && (

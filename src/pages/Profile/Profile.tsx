@@ -6,7 +6,7 @@ import type { UserResponseDTO } from '../../dtos/response/user-response.dto'
 import type { ImovelResponseDTO } from '../../dtos/response/imovel-response.dto'
 import { ImoveisService } from '../../services/imoveis.service'
 import { useAuth } from '../../hooks/useAuth'
-import { ProductCard } from '../../components/ProductCard/ProductCard'
+import { ProductCarousels } from '../../components/ProductCarousel/ProductCarousels'
 import { Icon } from '../../components/Icon/Icon'
 import { Avatar } from '../../components/Avatar/Avatar'
 import '../Advertisers/Advertisers.css'
@@ -144,9 +144,12 @@ export function Profile({ user, onLogout, publishedProductId }: ProfileProps) {
           </div>
         </div>
         {products.length > 0 ? (
-          <div className="products-grid">{products.map((product) => (
-            <ProductCard key={product.id} product={product} onEdit={() => navigate(`/perfil/imoveis/${product.id}/editar`)} onDelete={() => handleDelete(product)} disabled={deletingId !== null} />
-          ))}</div>
+          <ProductCarousels
+            products={products}
+            onEdit={(product) => navigate(`/perfil/imoveis/${product.id}/editar`)}
+            onDelete={handleDelete}
+            disabled={deletingId !== null}
+          />
         ) : (
           <div className="empty-state">
             <span className="empty-icon"><Icon name="home" size={30} /></span>

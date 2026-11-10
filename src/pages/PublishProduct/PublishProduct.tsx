@@ -8,6 +8,8 @@ import { brazilianStates } from '../../data/states'
 import { ImoveisService } from '../../services/imoveis.service'
 import { isAxiosError } from 'axios'
 import { Icon } from '../../components/Icon/Icon'
+import { DecimalInput } from '../../components/DecimalInput/DecimalInput'
+import { parseDecimalInput } from '../../utils/decimal-input'
 import { useAuth } from '../../hooks/useAuth'
 import '../Account.css'
 
@@ -127,13 +129,13 @@ export function PublishProduct() {
       titulo: String(form.get('titulo') ?? ''),
       tipo: propertyType,
       finalidade: form.get('finalidade') === 'venda' ? 'venda' : 'aluguel',
-      valor: Number(form.get('valor')),
-      condominioMensal: Number(form.get('condominioMensal')),
-      iptuMensal: Number(form.get('iptuMensal')),
+      valor: parseDecimalInput(String(form.get('valor') ?? '')),
+      condominioMensal: parseDecimalInput(String(form.get('condominioMensal') ?? '')),
+      iptuMensal: parseDecimalInput(String(form.get('iptuMensal') ?? '')),
       cidade: String(form.get('cidade') ?? ''),
       estado: String(form.get('estado') ?? ''),
       bairro: String(form.get('bairro') ?? ''),
-      area: Number(form.get('area')),
+      area: parseDecimalInput(String(form.get('area') ?? '')),
       quartos: isLand ? 0 : Number(form.get('quartos')),
       banheiros: isLand ? 0 : Number(form.get('banheiros')),
       vagasGaragem: isLand ? 0 : Number(form.get('vagasGaragem')),
@@ -200,8 +202,8 @@ export function PublishProduct() {
                 <option value="casa">Casa</option><option value="apartamento">Apartamento</option><option value="lote">Lote</option>
               </select>
             </label>
-            <label className="account-field"><span>Finalidade</span><select name="finalidade" defaultValue={existingProperty?.finalidade ?? 'aluguel'}><option value="aluguel">Aluguel</option><option value="venda">Venda</option></select></label>
-            <label className="account-field full-span"><span>Descrição</span><textarea name="descricao" defaultValue={existingProperty?.descricao ?? ''} required minLength={30} maxLength={2500} rows={5} placeholder="Descreva os espaços, os diferenciais e a região do imóvel." /></label>
+            <label className="account-field"><span>Finalidade</span><select name="finalidade" defaultValue={existingProperty?.finalidade ?? 'venda'}><option value="aluguel">Aluguel</option><option value="venda">Venda</option></select></label>
+            <label className="account-field full-span"><span>Descrição</span><textarea name="descricao" defaultValue={existingProperty?.descricao ?? ''} required minLength={5} maxLength={2500} rows={5} placeholder="Descreva os espaços, os diferenciais e a região do imóvel." /></label>
           </div>
         </fieldset>
         <fieldset className="publish-section">
@@ -215,10 +217,10 @@ export function PublishProduct() {
         <fieldset className="publish-section">
           <legend>Valores e características</legend>
           <div className="publish-form-grid">
-            <label className="account-field"><span>Valor de venda ou aluguel (R$)</span><input name="valor" defaultValue={existingProperty?.valor ?? ''} type="number" required min="0.01" step="0.01" inputMode="decimal" placeholder="0,00" /></label>
-            <label className="account-field"><span>{isLand ? 'Área total (m²)' : 'Área útil (m²)'}</span><input name="area" defaultValue={existingProperty?.area ?? ''} type="number" required min="0.01" step="0.01" inputMode="decimal" placeholder="0" /></label>
-            <label className="account-field"><span>Condomínio mensal (R$)</span><input name="condominioMensal" type="number" required min="0" step="0.01" inputMode="decimal" defaultValue={existingProperty?.condominioMensal ?? 0} /></label>
-            <label className="account-field"><span>IPTU mensal (R$)</span><input name="iptuMensal" type="number" required min="0" step="0.01" inputMode="decimal" defaultValue={existingProperty?.iptuMensal ?? 0} /></label>
+            <label className="account-field"><span>Valor de venda ou aluguel (R$)</span><DecimalInput name="valor" defaultValue={existingProperty?.valor} min={0.01} max={999999999999.99} /></label>
+            <label className="account-field"><span>{isLand ? 'Área total (m²)' : 'Área útil (m²)'}</span><DecimalInput name="area" format="area" defaultValue={existingProperty?.area} min={0.01} max={9999999999.99} /></label>
+            <label className="account-field"><span>Condomínio mensal (R$)</span><DecimalInput name="condominioMensal" defaultValue={existingProperty?.condominioMensal ?? 0} min={0} max={999999999999.99} /></label>
+            <label className="account-field"><span>IPTU mensal (R$)</span><DecimalInput name="iptuMensal" defaultValue={existingProperty?.iptuMensal ?? 0} min={0} max={999999999999.99} /></label>
             {!isLand && (
               <div className="publish-counts full-span">
                 <label className="account-field"><span>Quartos</span><input name="quartos" type="number" required min="1" step="1" inputMode="numeric" defaultValue={existingProperty?.quartos ?? 1} /></label>
