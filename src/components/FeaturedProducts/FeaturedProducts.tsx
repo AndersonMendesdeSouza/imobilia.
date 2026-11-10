@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import type { ImovelResponseDTO } from '../../dtos/response/imovel-response.dto'
@@ -6,6 +6,7 @@ import { Icon } from '../Icon/Icon'
 import './FeaturedProducts.css'
 
 export function FeaturedProducts({ products }: { products: ImovelResponseDTO[] }) {
+  const location = useLocation()
   const [activeIndex, setActiveIndex] = useState(0)
   const trackRef = useRef<HTMLDivElement>(null)
 
@@ -82,7 +83,7 @@ export function FeaturedProducts({ products }: { products: ImovelResponseDTO[] }
                   {product.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
                   {product.finalidade === 'aluguel' && <small>/mês</small>}
                 </p>
-                <Link className="button featured-link" to={`/imoveis/${product.id}`} tabIndex={index === activeIndex ? 0 : -1}>
+                <Link className="button featured-link" to={`/imoveis/${product.id}`} state={{ from: `${location.pathname}${location.search}` }} tabIndex={index === activeIndex ? 0 : -1}>
                   Ver detalhes <Icon name="arrow" size={17} />
                 </Link>
               </div>

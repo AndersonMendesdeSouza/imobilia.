@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes, useLocation, useSearchParams } from 'react-router'
+import { useState } from 'react'
 import type { UserResponseDTO } from '../dtos/response/user-response.dto'
-import { Products } from '../pages/Products/Products'
+import { Products, type FiltrosImoveis } from '../pages/Products/Products'
 import { ProductDetails } from '../pages/ProductDetails/ProductDetails'
 import { Advertisers } from '../pages/Advertisers/Advertisers'
 import { AdvertiserProfile } from '../pages/AdvertiserProfile/AdvertiserProfile'
@@ -19,14 +20,21 @@ interface AppRoutesProps {
 export function AppRoutes({ user, onLogout, loginDestination }: AppRoutesProps) {
   const localizacao = useLocation()
   const [searchParams] = useSearchParams()
-  const finalidadeParam = searchParams.get('finalidade')
-  const finalidade = finalidadeParam === 'venda' || finalidadeParam === 'aluguel' ? finalidadeParam : undefined
+  const [listingFilters, setListingFilters] = useState<FiltrosImoveis>({ localizacao: '' })
+  const [appliedListingFilters, setAppliedListingFilters] = useState<FiltrosImoveis>({ localizacao: '' })
 
   return (
     <Routes>
       <Route index element={<Navigate to="/imoveis" replace />} />
       <Route path="imoveis">
-        <Route index element={<Products finalidade={finalidade} />} />
+        <Route index element={(
+          <Products
+            filters={listingFilters}
+            appliedFilters={appliedListingFilters}
+            setFilters={setListingFilters}
+            setAppliedFilters={setAppliedListingFilters}
+          />
+        )} />
         <Route path=":productId" element={<ProductDetails key={localizacao.pathname} />} />
       </Route>
       <Route path="anunciantes">

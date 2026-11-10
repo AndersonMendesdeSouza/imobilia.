@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import type { ImovelResponseDTO } from '../../dtos/response/imovel-response.dto'
 import { Icon } from '../Icon/Icon'
 
@@ -12,6 +12,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onEdit, onDelete, disabled = false }: ProductCardProps) {
+  const location = useLocation()
   const isLand = product.tipo === 'lote'
   const valor = product.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
 
@@ -26,6 +27,7 @@ export function ProductCard({ product, onEdit, onDelete, disabled = false }: Pro
       <Link
         className="product-card-link"
         to={`/imoveis/${product.id}`}
+        state={{ from: `${location.pathname}${location.search}` }}
         aria-label={`Ver ${product.titulo}, ${valor}${product.finalidade === 'aluguel' ? ' por mês' : ''}`}
       >
         <div className="product-image">

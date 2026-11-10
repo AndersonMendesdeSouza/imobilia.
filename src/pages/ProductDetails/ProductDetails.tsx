@@ -1,5 +1,6 @@
-import { Link, useParams } from 'react-router'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { useEffect } from 'react'
+import type { MouseEvent } from 'react'
 import { useImoveis } from '../../hooks/useImoveis'
 import { ProductGallery } from '../../components/ProductGallery/ProductGallery'
 import { ProductContact } from '../../components/ProductContact/ProductContact'
@@ -8,9 +9,28 @@ import { Icon } from '../../components/Icon/Icon'
 const propertyLabels = { casa: 'Casa', apartamento: 'Apartamento', lote: 'Lote' }
 
 export function ProductDetails() {
+  const location = useLocation()
+  const navigate = useNavigate()
   const { productId = '' } = useParams()
   const { imoveis, carregando, erro, recarregar } = useImoveis()
   const product = imoveis.find((imovel) => imovel.id === productId)
+  const navigationState: unknown = location.state
+  let previousPage: string | undefined
+  if (
+    navigationState && typeof navigationState === 'object' &&
+    'from' in navigationState && typeof navigationState.from === 'string' &&
+    navigationState.from.startsWith('/') && !navigationState.from.startsWith('//')
+  ) {
+    previousPage = navigationState.from
+  }
+  const backLink = previousPage ?? '/imoveis'
+
+  function handleBack(event: MouseEvent<HTMLAnchorElement>) {
+    if (!previousPage || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+
+    event.preventDefault()
+    navigate(-1)
+  }
 
   useEffect(() => {
     if (carregando) {
@@ -42,20 +62,19 @@ export function ProductDetails() {
         <span className="empty-icon"><Icon name="home" size={30} /></span>
         <h1>Imóvel não encontrado</h1>
         <p>Este anúncio não está disponível. Conheça os outros imóveis da nossa seleção.</p>
-        <Link className="button button-primary" to="/imoveis">
+        <Link className="button button-primary" to={backLink} onClick={handleBack}>
           <Icon name="back" size={18} /> Voltar aos imóveis
         </Link>
       </main>
     )
   }
 
-  const backLink = `/imoveis?finalidade=${product.finalidade}`
   const isLand = product.tipo === 'lote'
 
   return (
     <main id="main-content" className="detail-page container" tabIndex={-1}>
       <nav className="breadcrumbs" aria-label="Caminho da página">
-        <Link to={backLink}><Icon name="back" size={16} /> Voltar aos imóveis</Link>
+        <Link to={backLink} onClick={handleBack}><Icon name="back" size={16} /> Voltar aos imóveis</Link>
         <span>/</span><span>{product.titulo}</span>
       </nav>
       <div className="detail-heading">

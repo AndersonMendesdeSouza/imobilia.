@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router'
+import { useEffect } from 'react'
 import type { FormEvent } from 'react'
 import type { TipoImovel, FinalidadeImovel } from '../../dtos/enums'
 import { useImoveis } from '../../hooks/useImoveis'
@@ -8,45 +7,49 @@ import { FeaturedProducts } from '../../components/FeaturedProducts/FeaturedProd
 import { Icon } from '../../components/Icon/Icon'
 import './Products.css'
 
-interface FiltrosImoveis {
+export interface FiltrosImoveis {
   localizacao: string
+  finalidade?: FinalidadeImovel
   tipo?: TipoImovel
   valorMaximo?: number
   quartos?: number
+}
+
+interface ProductsProps {
+  filters: FiltrosImoveis
+  appliedFilters: FiltrosImoveis
+  setFilters: (filters: FiltrosImoveis) => void
+  setAppliedFilters: (filters: FiltrosImoveis) => void
 }
 
 function normalizarLocalizacao(localizacao: string) {
   return localizacao.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()
 }
 
-export function Products({ finalidade }: { finalidade?: FinalidadeImovel }) {
+export function Products({ filters, appliedFilters, setFilters, setAppliedFilters }: ProductsProps) {
   const initialFilters: FiltrosImoveis = {
     localizacao: '',
   }
-  const [filters, setFilters] = useState(initialFilters)
-  const [appliedFilters, setAppliedFilters] = useState(initialFilters)
   const { imoveis, carregando, erro, recarregar } = useImoveis()
   const localizacao = normalizarLocalizacao(appliedFilters.localizacao)
   const products = imoveis.filter((product) => {
-    if (finalidade && product.finalidade !== finalidade) return false
+    if (appliedFilters.finalidade && product.finalidade !== appliedFilters.finalidade) return false
     if (appliedFilters.tipo && product.tipo !== appliedFilters.tipo) return false
     if (appliedFilters.valorMaximo !== undefined && product.valor > appliedFilters.valorMaximo) return false
     if (appliedFilters.quartos !== undefined && product.quartos < appliedFilters.quartos) return false
     const endereco = normalizarLocalizacao(`${product.bairro} ${product.cidade} ${product.estado}`)
     return endereco.includes(localizacao)
   })
-  const featuredProducts = imoveis.filter((product) => (!finalidade || product.finalidade === finalidade) && product.destaque)
-  const hasFilters = Boolean(appliedFilters.localizacao || appliedFilters.tipo || appliedFilters.valorMaximo || appliedFilters.quartos)
+  const featuredProducts = products.filter((product) => product.destaque)
+  const hasFilters = Boolean(appliedFilters.localizacao || appliedFilters.finalidade || appliedFilters.tipo || appliedFilters.valorMaximo || appliedFilters.quartos)
   const rentPrices = [2000, 3000, 4000, 5000, 6000]
   const salePrices = [500000, 750000, 1000000]
-  let priceOptions = [...rentPrices, ...salePrices]
+  const priceOptions = [...rentPrices, ...salePrices]
   let titulo = 'Todos os imóveis'
-  if (finalidade === 'aluguel') {
-    priceOptions = rentPrices
+  if (appliedFilters.finalidade === 'aluguel') {
     titulo = 'Imóveis para alugar'
   }
-  if (finalidade === 'venda') {
-    priceOptions = salePrices
+  if (appliedFilters.finalidade === 'venda') {
     titulo = 'Imóveis para comprar'
   }
   let resumo = `${products.length} ${products.length === 1 ? 'imóvel encontrado' : 'imóveis encontrados'}`
@@ -103,6 +106,24 @@ export function Products({ finalidade }: { finalidade?: FinalidadeImovel }) {
             </select>
           </span><Icon name="chevron" size={16} />
         </label>
+        <label className="filter-field purpose-field">
+          <Icon name="building" />
+          <span className="field-content">
+            <span className="field-label">Finalidade</span>
+            <select
+              name="finalidade"
+              value={filters.finalidade ?? ''}
+              onChange={(event) => {
+                const finalidade = event.target.value as FinalidadeImovel | ''
+                setFilters({ ...filters, finalidade: finalidade || undefined })
+              }}
+            >
+              <option value="">Todos</option>
+              <option value="venda">Venda</option>
+              <option value="aluguel">Aluguel</option>
+            </select>
+          </span><Icon name="chevron" size={16} />
+        </label>
         <label className="filter-field price-field">
           <span className="currency-icon" aria-hidden="true">R$</span>
           <span className="field-content">
@@ -144,13 +165,6 @@ export function Products({ finalidade }: { finalidade?: FinalidadeImovel }) {
           <span>Buscar<span className="search-button-context"> imóveis</span></span>
         </button>
       </form>
-
-      <nav className={`purpose-switch purpose-switch-${finalidade ?? 'todos'}`} aria-label="Finalidade do imóvel">
-        <span className="purpose-switch-indicator" aria-hidden="true" />
-        <Link to="/imoveis" aria-current={!finalidade ? 'page' : undefined} onClick={finalidade ? clearFilters : undefined}>Todos</Link>
-        <Link to="/imoveis?finalidade=venda" aria-current={finalidade === 'venda' ? 'page' : undefined} onClick={finalidade !== 'venda' ? clearFilters : undefined}>Comprar</Link>
-        <Link to="/imoveis?finalidade=aluguel" aria-current={finalidade === 'aluguel' ? 'page' : undefined} onClick={finalidade !== 'aluguel' ? clearFilters : undefined}>Alugar</Link>
-      </nav>
 
       {!carregando && !erro && (
         <FeaturedProducts
