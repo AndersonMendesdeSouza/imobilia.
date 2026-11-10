@@ -26,7 +26,7 @@ export function AppRoutes({ user, onLogout, loginDestination }: AppRoutesProps) 
     <Routes>
       <Route index element={<Navigate to="/imoveis" replace />} />
       <Route path="imoveis">
-        <Route index element={<Products key={finalidade ?? 'todos'} finalidade={finalidade} />} />
+        <Route index element={<Products finalidade={finalidade} />} />
         <Route path=":productId" element={<ProductDetails key={localizacao.pathname} />} />
       </Route>
       <Route path="anunciantes">
@@ -49,7 +49,8 @@ export function AppRoutes({ user, onLogout, loginDestination }: AppRoutesProps) 
               />
             ) : null}
           />
-          <Route path="publicar" element={<PublishProduct />} />
+          <Route path="publicar" element={<PublishProduct key={localizacao.pathname} />} />
+          <Route path="imoveis/:productId/editar" element={<PublishProduct key={localizacao.pathname} />} />
           <Route path="sobre" element={<More isLoggedIn />} />
         </Route>
       </Route>

@@ -1,4 +1,4 @@
-export type IconName = 'home' | 'search' | 'pin' | 'bed' | 'bath' | 'area' | 'arrow' | 'back' | 'chevron' | 'car' | 'check' | 'close' | 'images' | 'mail' | 'phone' | 'expand' | 'building' | 'menu' | 'share' | 'user' | 'lock' | 'plus' | 'logout'
+export type IconName = 'home' | 'search' | 'pin' | 'bed' | 'bath' | 'area' | 'arrow' | 'back' | 'chevron' | 'car' | 'check' | 'close' | 'images' | 'mail' | 'phone' | 'expand' | 'building' | 'menu' | 'share' | 'user' | 'lock' | 'plus' | 'logout' | 'edit' | 'trash'
 
 const paths: Record<IconName, string> = {
   home: 'm3 10 9-7 9 7M5 9v12h14V9M9 21v-8h6v8',
@@ -24,6 +24,8 @@ const paths: Record<IconName, string> = {
   lock: 'M5 10h14v11H5V10ZM8 10V7a4 4 0 0 1 8 0v3M12 15v2',
   plus: 'M12 4v16M4 12h16',
   logout: 'M9 4H4v16h5M9 12h12M16 7l5 5-5 5',
+  edit: 'm16 3 5 5M4 15 16 3l5 5L9 20l-6 1 1-6Z',
+  trash: 'M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7',
 }
 
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {

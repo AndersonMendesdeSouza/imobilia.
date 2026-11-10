@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
 import { Header } from './components/Header/Header'
 import { TabBar } from './components/TabBar/TabBar'
 import { AppRoutes } from './routes/AppRoutes'
@@ -10,9 +10,6 @@ function App() {
   const { usuario: currentUser, logout } = useAuth()
   const localizacao = useLocation()
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const finalidadeParam = searchParams.get('finalidade')
-  const finalidade = finalidadeParam === 'venda' || finalidadeParam === 'aluguel' ? finalidadeParam : undefined
   const loginState: unknown = localizacao.state
   let loginDestination = '/perfil'
 
@@ -35,7 +32,7 @@ function App() {
         event.preventDefault()
         document.getElementById('main-content')?.focus()
       }}>Pular para o conteúdo</a>
-      <Header finalidade={finalidade} isListing={localizacao.pathname === '/imoveis'} />
+      <Header />
       <AppRoutes
         user={currentUser}
         onLogout={handleLogout}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router'
 import type { FormEvent } from 'react'
 import type { TipoImovel, FinalidadeImovel } from '../../dtos/enums'
 import { useImoveis } from '../../hooks/useImoveis'
@@ -143,6 +144,13 @@ export function Products({ finalidade }: { finalidade?: FinalidadeImovel }) {
           <span>Buscar<span className="search-button-context"> imóveis</span></span>
         </button>
       </form>
+
+      <nav className={`purpose-switch purpose-switch-${finalidade ?? 'todos'}`} aria-label="Finalidade do imóvel">
+        <span className="purpose-switch-indicator" aria-hidden="true" />
+        <Link to="/imoveis" aria-current={!finalidade ? 'page' : undefined} onClick={finalidade ? clearFilters : undefined}>Todos</Link>
+        <Link to="/imoveis?finalidade=venda" aria-current={finalidade === 'venda' ? 'page' : undefined} onClick={finalidade !== 'venda' ? clearFilters : undefined}>Comprar</Link>
+        <Link to="/imoveis?finalidade=aluguel" aria-current={finalidade === 'aluguel' ? 'page' : undefined} onClick={finalidade !== 'aluguel' ? clearFilters : undefined}>Alugar</Link>
+      </nav>
 
       {!carregando && !erro && (
         <FeaturedProducts

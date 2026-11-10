@@ -4,12 +4,25 @@ import { Icon } from '../Icon/Icon'
 
 const propertyLabels = { casa: 'Casa', apartamento: 'Apartamento', lote: 'Lote' }
 
-export function ProductCard({ product }: { product: ImovelResponseDTO }) {
+interface ProductCardProps {
+  product: ImovelResponseDTO
+  onEdit?: () => void
+  onDelete?: () => void
+  disabled?: boolean
+}
+
+export function ProductCard({ product, onEdit, onDelete, disabled = false }: ProductCardProps) {
   const isLand = product.tipo === 'lote'
   const valor = product.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
 
   return (
     <article className="product-card">
+      {(onEdit || onDelete) && (
+        <div className="product-card-actions">
+          {onEdit && <button className="product-card-action" type="button" onClick={onEdit} disabled={disabled} aria-label={`Editar ${product.titulo}`} title="Editar imóvel"><Icon name="edit" size={18} /></button>}
+          {onDelete && <button className="product-card-action product-card-delete" type="button" onClick={onDelete} disabled={disabled} aria-label={`Excluir ${product.titulo}`} title="Excluir imóvel"><Icon name="trash" size={18} /></button>}
+        </div>
+      )}
       <Link
         className="product-card-link"
         to={`/imoveis/${product.id}`}

@@ -16,4 +16,18 @@ export const ImoveisService = {
     const response = await api.get<ImovelResponseDTO[]>('/imovel')
     return response.data
   },
+
+  async findOne(id: string): Promise<ImovelResponseDTO> {
+    const response = await api.get<ImovelResponseDTO>(`/imovel/${id}`)
+    return response.data
+  },
+
+  async update(id: string, dto: Partial<ImovelRequestDTO>): Promise<ImovelResponseDTO> {
+    const response = await api.patch<ImovelResponseDTO>(`/imovel/${id}`, dto)
+    return response.data
+  },
+
+  async remove(id: string): Promise<void> {
+    await api.delete(`/imovel/${id}`)
+  },
 }

@@ -48,31 +48,6 @@
 .brand-dot {
   color: var(--primary);
 }
-.main-nav {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-.main-nav a {
-  font-size: 14px;
-  font-weight: 550;
-  padding: 12px 28px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: #68717e;
-}
-.main-nav a:hover {
-  background: var(--accent-soft);
-  color: var(--primary);
-}
-.main-nav .active {
-  color: var(--primary);
-  background: var(--accent-soft);
-  border-color: #e9dfc7;
-}
 .header-note {
   display: inline-flex;
   align-items: center;
@@ -172,6 +147,7 @@
   gap: 24px 21px;
 }
 .product-card {
+  position: relative;
   border: 1px solid #e4e0d7;
   border-radius: 12px;
   padding: 9px 9px 0;
@@ -187,6 +163,39 @@
   display: block;
   height: 100%;
   border-radius: 6px;
+}
+.product-card-actions {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1;
+  display: flex;
+  gap: 7px;
+}
+.product-card-action {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--primary);
+  cursor: pointer;
+}
+.product-card-action:hover {
+  background: var(--accent-soft);
+}
+.product-card-delete {
+  color: #a04747;
+}
+.product-card-delete:hover {
+  background: #fff0ee;
+}
+.product-card-action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 .product-image {
   position: relative;
@@ -841,9 +850,6 @@
   .header-note {
     font-size: 10px;
   }
-  .main-nav a {
-    padding: 10px 20px;
-  }
   .products-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -920,15 +926,6 @@
   }
   .header-note {
     display: none;
-  }
-  .main-nav {
-    position: static;
-    transform: none;
-    gap: 2px;
-  }
-  .main-nav a {
-    padding: 9px 13px;
-    font-size: 12px;
   }
   .listing-page {
     padding-top: 20px;
@@ -1197,9 +1194,6 @@
   .brand {
     font-size: 23px;
   }
-  .main-nav a {
-    padding-inline: 10px;
-  }
   .product-features strong {
     font-size: 11px;
   }
@@ -1225,10 +1219,6 @@
 }
 .eyebrow > span {
   background: var(--accent);
-}
-.main-nav .active {
-  background: var(--accent-soft);
-  border-color: #e9dfc7;
 }
 .product-features.land-features, .detail-features.land-features {
   grid-template-columns: 1fr;
